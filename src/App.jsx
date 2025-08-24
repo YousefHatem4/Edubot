@@ -9,6 +9,8 @@ import Upload from './Components/Upload/Upload'
 import Edubot from './Components/Edubot/Edubot'
 import Register from './Components/Register/Register'
 import Login from './Components/Login/Login'
+import ForgetPass from './Components/ForgetPass/ForgetPass'
+import TeacherPage from './Components/TeacherPage/TeacherPage'
 
 
 const routers = createBrowserRouter([
@@ -21,6 +23,8 @@ const routers = createBrowserRouter([
       { path: "edubot", element: <Edubot /> },
       { path: "register", element: <Register /> },
       { path: "login", element: <Login /> },
+      { path: "forgetpass", element: <ForgetPass /> },
+      { path: "teacher-page", element: <TeacherPage /> },
     ]
   }
 ])
