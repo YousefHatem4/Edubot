@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBolt, faChalkboardUser, faEnvelope, faEye, faEyeSlash, faGraduationCap, faLock, faMobileScreen, faShieldHalved, faUserGraduate } from '@fortawesome/free-solid-svg-icons'
+import { faAngleRight, faBolt, faChalkboardUser, faEnvelope, faEye, faEyeSlash, faGraduationCap, faLock, faMobileScreen, faShieldHalved, faUserGraduate } from '@fortawesome/free-solid-svg-icons'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
@@ -9,7 +9,17 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [role, setRole] = useState("")
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -18,42 +28,38 @@ export default function Login() {
   }
 
   return (
-    <section className='bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] p-10 md:p-0 min-h-[110vh] flex items-center justify-center flex-col px-4'>
+    <section className='bg-[linear-gradient(116.66deg,#0F0A1F_1.16%,#1E1B29_94.74%)] p-4 md:p-6 lg:p-10 min-h-screen flex items-center justify-center flex-col'>
       {/* main box */}
-      <section className='w-full max-w-[448px] h-auto lg:h-[745px] rounded-[16px] border-[1px] opacity-100 bg-[#0F0B1A] shadow-[0px_25px_50px_0px_#00000040] flex items-center py-4 flex-col transition-all duration-300 ease-in-out hover:shadow-[0px_25px_50px_0px_#A259FF40]'>
+      <section className='w-full max-w-[614px] h-auto lg:h-[651px] rounded-[16px] opacity-100 bg-[#0F0B1A1A] shadow-[0px_6px_40.1px_0px_#FFFFFF05] py-6 lg:py-4 transition-all duration-300 ease-in-out hover:shadow-[0px_25px_50px_0px_#A259FF40]'>
 
         {/* title */}
-        <div className='w-[64px] h-[64px] rounded-full opacity-100 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] flex items-center justify-center transition-all duration-300 ease-in-out hover:scale-110'>
-          <FontAwesomeIcon className='text-2xl text-white transition-all duration-300 ease-in-out' icon={faGraduationCap} />
-        </div>
-        <h1 className='text-white font-poppins font-bold text-[24px] leading-[32px] text-center mt-3 transition-all duration-300 ease-in-out'>Welcome Back</h1>
-        <p className='text-[#B0B0B0] font-poppins font-normal text-[14px] leading-[20px] text-center mt-2 transition-all duration-300 ease-in-out'>
-          Sign in to continue your learning journey
+        <h1 className='font-semibold text-[28px] md:text-[33.18px] leading-[100%] tracking-[0%] text-center text-[#E5E7EB] mt-4 lg:mt-0'>Welcome Back</h1>
+        <p className='mt-3 font-normal text-[18px] md:text-[22px] leading-[100%] tracking-[0%] text-center text-[#8C8C8C]'>
+          Sign in to your account
         </p>
 
-        {/* form */}
-        <form className='mt-8 w-full flex flex-col items-center' onSubmit={handleSubmit}>
+        <form className='mt-6 lg:mt-8 px-4 md:px-6 lg:px-10' onSubmit={handleSubmit}>
           {/* email input */}
-          <label htmlFor="email" className="block mb-3 text-white font-poppins font-medium text-[14px] w-full max-w-[382px] transition-all duration-300 ease-in-out">Email Address</label>
-          <div className="relative w-full max-w-[382px] transition-all duration-300 ease-in-out">
-            <FontAwesomeIcon className='absolute text-[#ADAEBC] left-3 top-[52%] -translate-y-1/2 transition-all duration-300 ease-in-out' icon={faEnvelope} />
+          <label htmlFor="email" className="block font-normal text-[20px] md:text-[26.65px] leading-[100%] tracking-[0%] text-[#E5E7EB]">Email address</label>
+          <div className="relative mt-3 md:mt-5">
+            <FontAwesomeIcon className='absolute text-[#E5E7EB] left-4 md:left-5 top-[52%] -translate-y-1/2 transition-all duration-300 ease-in-out text-sm md:text-base' icon={faEnvelope} />
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full ps-11 h-[50px] rounded-[12px] border border-[#374151] bg-[#111827] text-[#ADAEBC] font-poppins text-[16px] transition-all duration-300 ease-in-out focus:border-[#8E2DE2] focus:outline-none focus:ring-2 focus:ring-[#8E2DE2]"
-              placeholder="Enter your email"
+              className="ps-12 md:ps-14 w-full h-[60px] md:h-[70px] lg:h-[82px] rounded-[12px] opacity-100 border-2 border-[#E5E7EB] font-poppins font-normal text-[16px] md:text-[19.2px] leading-[100%] tracking-[0%] text-[#656567] transition-all duration-300 ease-in-out focus:text-[#E5E7EB] focus:border-[#8E2DE2] focus:outline-none focus:ring-2 focus:ring-[#8E2DE2]"
+              placeholder="EX:Mohamed@gmail.com"
               required
             />
           </div>
 
-          {/* password input */}
-          <label htmlFor="pass" className="block mb-3 mt-8 text-white font-poppins font-medium text-[14px] w-full max-w-[382px] transition-all duration-300 ease-in-out">Password</label>
-          <div className="relative w-full max-w-[382px] transition-all duration-300 ease-in-out">
-            <FontAwesomeIcon className='absolute text-[#ADAEBC] left-3 top-[52%] -translate-y-1/2 transition-all duration-300 ease-in-out' icon={faLock} />
+          {/* pass input */}
+          <label htmlFor="pass" className="block mt-6 md:mt-8 font-normal text-[20px] md:text-[26.65px] leading-[100%] tracking-[0%] text-[#E5E7EB]">Password</label>
+          <div className="relative mt-3 md:mt-5">
+            <FontAwesomeIcon className='absolute text-[#ADAEBC] left-4 md:left-5 top-[52%] -translate-y-1/2 transition-all duration-300 ease-in-out text-sm md:text-base' icon={faLock} />
             <FontAwesomeIcon
-              className='absolute text-[#ADAEBC] right-3 top-[52%] -translate-y-1/2 cursor-pointer hover:text-[#A259FF] transition-all duration-300 ease-in-out'
+              className='absolute text-[#ADAEBC] right-4 md:right-8 top-[52%] -translate-y-1/2 cursor-pointer hover:text-[#A259FF] transition-all duration-300 ease-in-out text-sm md:text-base'
               icon={showPassword ? faEye : faEyeSlash}
               onClick={() => setShowPassword(!showPassword)}
             />
@@ -62,78 +68,43 @@ export default function Login() {
               id="pass"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full ps-11 h-[50px] rounded-[12px] border border-[#374151] bg-[#111827] text-[#ADAEBC] font-poppins text-[16px] transition-all duration-300 ease-in-out focus:border-[#8E2DE2] focus:outline-none focus:ring-2 focus:ring-[#8E2DE2]"
+              className="ps-12 md:ps-14 w-full h-[60px] md:h-[70px] lg:h-[82px] rounded-[12px] opacity-100 border-2 border-[#E5E7EB] font-poppins font-normal text-[16px] md:text-[19.2px] leading-[100%] tracking-[0%] text-[#656567] transition-all duration-300 ease-in-out focus:text-[#E5E7EB] focus:border-[#8E2DE2] focus:outline-none focus:ring-2 focus:ring-[#8E2DE2]"
               placeholder="Enter your password"
               required
             />
           </div>
 
-          {/* category input */}
-          <label className="block mb-4 mt-8 text-white font-poppins font-medium text-[14px] w-full max-w-[382px] transition-all duration-300 ease-in-out">Select Your Role</label>
-          <div className='flex flex-col sm:flex-row gap-3 w-full max-w-[382px]'>
-            {/* Student */}
-            <div
-              onClick={() => setRole("Student")}
-              className={`flex-1 h-[70px] rounded-[12px] border flex justify-center items-center gap-3 flex-col cursor-pointer transition-all duration-300 ease-in-out ${role === "Student" ? "border-[#8E2DE2] bg-[#1F1B2E] scale-105" : "border-[#374151] bg-[#111827] hover:border-[#6B7280] hover:bg-[#1a1f2e]"}`}
+          <div className='flex items-center justify-center mt-6 md:mt-8'>
+            <button
+              className="flex items-center justify-center gap-4 w-full max-w-[477px] h-[60px] md:h-[70px] lg:h-[83px] rounded-[12px] bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] font-semibold text-[18px] md:text-[22px] lg:text-[27.65px] leading-[100%] text-white shadow-[0px_-7px_13.4px_0px_#4A00E02E] transition-colors duration-1000 ease-out hover:shadow-[0px_8px_36.2px_0px_#8A38F540] hover:bg-gradient-to-r hover:from-[#8B5CF6] hover:to-[#EC4899] group"
             >
-              <FontAwesomeIcon className={`transition-all duration-300 ease-in-out ${role === "Student" ? "text-[#A259FF]" : "text-[#ADAEBC] hover:text-[#A259FF]"}`} icon={faUserGraduate} />
-              <h1 className={`transition-all duration-300 ease-in-out ${role === "Student" ? "text-[#A259FF]" : "text-[#B0B0B0] hover:text-white"} font-poppins font-medium text-[14px] text-center`}>Student</h1>
-            </div>
-            {/* University */}
-            <div
-              onClick={() => setRole("University")}
-              className={`flex-1 h-[70px] rounded-[12px] border flex justify-center items-center gap-3 flex-col cursor-pointer transition-all duration-300 ease-in-out ${role === "University" ? "border-[#8E2DE2] bg-[#1F1B2E] scale-105" : "border-[#374151] bg-[#111827] hover:border-[#6B7280] hover:bg-[#1a1f2e]"}`}
-            >
-              <FontAwesomeIcon className={`transition-all duration-300 ease-in-out ${role === "University" ? "text-[#A259FF]" : "text-[#ADAEBC] hover:text-[#A259FF]"}`} icon={faGraduationCap} />
-              <h1 className={`transition-all duration-300 ease-in-out ${role === "University" ? "text-[#A259FF]" : "text-[#B0B0B0] hover:text-white"} font-poppins font-medium text-[14px] text-center`}>University</h1>
-            </div>
-            {/* Teacher */}
-            <div
-              onClick={() => setRole("Teacher")}
-              className={`flex-1 h-[70px] rounded-[12px] border flex justify-center items-center gap-3 flex-col cursor-pointer transition-all duration-300 ease-in-out ${role === "Teacher" ? "border-[#8E2DE2] bg-[#1F1B2E] scale-105" : "border-[#374151] bg-[#111827] hover:border-[#6B7280] hover:bg-[#1a1f2e]"}`}
-            >
-              <FontAwesomeIcon className={`transition-all duration-300 ease-in-out ${role === "Teacher" ? "text-[#A259FF]" : "text-[#ADAEBC] hover:text-[#A259FF]"}`} icon={faChalkboardUser} />
-              <h1 className={`transition-all duration-300 ease-in-out ${role === "Teacher" ? "text-[#A259FF]" : "text-[#B0B0B0] hover:text-white"} font-poppins font-medium text-[14px] text-center`}>Teacher</h1>
-            </div>
+              Sign in
+              <FontAwesomeIcon
+                icon={faAngleRight}
+                className="transition-transform duration-500 ease-out group-hover:translate-x-2"
+              />
+            </button>
           </div>
-
-          {/* forgot password link */}
-          <div className="w-full max-w-[382px] flex justify-end mt-7">
-            <Link
-              to="/forgetpass"
-              className="text-[#B0B0B0] font-poppins text-[15px] hover:text-[#A259FF] transition-all duration-300 ease-in-out"
-            >
-              Forgot password?
-            </Link>
-          </div>
-
-          <button
-            type="submit"
-            className='w-full max-w-[382px] cursor-pointer mt-7 h-[48px] rounded-[12px] bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] shadow-[0_0_20px_0_#A259FF80] font-poppins font-semibold text-[16px] text-white transition-all duration-300 ease-in-out hover:shadow-[0_0_25px_5px_#A259FF80] hover:scale-[1.02]'
-          >
-            Sign In
-          </button>
-
-          <div className='w-full max-w-[382px] h-[45px] mt-7 border-t border-t-[#1F2937]'>
-            <h1 className='font-poppins mt-5 font-normal text-[14px] text-center text-[#B0B0B0] transition-all duration-300 ease-in-out'>
-              Don't have an account? <Link to="/register" className='font-medium text-[#A259FF] hover:text-[#8E2DE2] transition-all duration-300 ease-in-out'> Sign up here</Link>
+          <div className='mt-8 md:mt-12'>
+            <h1 className='font-medium text-[14px] md:text-[16px] leading-[100%] tracking-[0%] text-center text-[#E5E7EB]'>
+              Don't have an account? <Link to="/register" className='font-medium text-[#8B5CF6] hover:text-[#8E2DE2] transition-all duration-300 ease-in-out'> Sign up </Link>
             </h1>
           </div>
         </form>
       </section>
 
       {/* last items */}
-      <section className='mt-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-10 transition-all duration-300 ease-in-out'>
-        <div className='font-poppins text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
-          <FontAwesomeIcon icon={faShieldHalved} className="transition-all duration-300 ease-in-out" />
+      <section className='mt-6 md:mt-8 flex flex-col sm:flex-row items-center gap-3 md:gap-4 lg:gap-10 transition-all duration-300 ease-in-out'>
+        <div className='font-poppins text-[10px] md:text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
+          <FontAwesomeIcon icon={faShieldHalved} className="transition-all duration-300 ease-in-out text-xs md:text-sm" />
           <p>Secure</p>
         </div>
-        <div className='font-poppins text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
-          <FontAwesomeIcon icon={faBolt} className="transition-all duration-300 ease-in-out" />
+        <div className='font-poppins text-[10px] md:text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
+          <FontAwesomeIcon icon={faBolt} className="transition-all duration-300 ease-in-out text-xs md:text-sm" />
           <p>Fast</p>
         </div>
-        <div className='font-poppins text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
-          <FontAwesomeIcon icon={faMobileScreen} className="transition-all duration-300 ease-in-out" />
+        <div className='font-poppins text-[10px] md:text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
+          <FontAwesomeIcon icon={faMobileScreen} className="transition-all duration-300 ease-in-out text-xs md:text-sm" />
           <p>Mobile Ready</p>
         </div>
       </section>
