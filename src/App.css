@@ -1,1 +1,78 @@
 @import "tailwindcss";
+
+/* home screen animation */
+/* Main Image Up-and-Down Animation */
+@keyframes floatUpDown {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-20px); /* moves image up */
+  }
+}
+
+.float-animation {
+  animation: floatUpDown 2s ease-in-out infinite;
+  -webkit-animation: floatUpDown 2s ease-in-out infinite;
+}
+
+/* Icon 1 Animation */
+@keyframes move1 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25% { transform: translate(-30px, 10px) scale(1.05) rotate(-5deg); }
+  50% { transform: translate(-60px, 20px) scale(1.1) rotate(5deg); }
+  75% { transform: translate(-30px, 15px) scale(1.05) rotate(-3deg); }
+}
+.animate-move1 {
+  animation: move1 10s ease-in-out infinite;
+  -webkit-animation: move1 10s ease-in-out infinite;
+}
+
+/* Icon 2 Animation */
+@keyframes move2 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25% { transform: translate(30px, 15px) scale(1.05) rotate(4deg); }
+  50% { transform: translate(60px, 40px) scale(1.1) rotate(-6deg); }
+  75% { transform: translate(40px, 20px) scale(1.05) rotate(3deg); }
+}
+.animate-move2 {
+  animation: move2 10s ease-in-out infinite;
+  -webkit-animation: move2 10s ease-in-out infinite;
+}
+
+/* Icon 3 Animation */
+@keyframes move3 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25% { transform: translate(-25px, -20px) scale(1.05) rotate(3deg); }
+  50% { transform: translate(-50px, -40px) scale(1.1) rotate(-5deg); }
+  75% { transform: translate(-35px, -30px) scale(1.05) rotate(2deg); }
+}
+.animate-move3 {
+  animation: move3 10s ease-in-out infinite;
+  -webkit-animation: move3 10s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .px-30 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .px-30 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Prevent horizontal scrolling */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Ensure smooth transitions for mobile menu */
+* {
+  box-sizing: border-box;
+}
