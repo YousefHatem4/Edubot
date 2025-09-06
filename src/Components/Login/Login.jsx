@@ -30,7 +30,7 @@ export default function Login() {
   return (
     <section className='bg-[linear-gradient(116.66deg,#0F0A1F_1.16%,#1E1B29_94.74%)] p-4 md:p-6 lg:p-10 min-h-screen flex items-center justify-center flex-col'>
       {/* main box */}
-      <section className='w-full max-w-[614px] h-auto lg:h-[651px] rounded-[16px] opacity-100 bg-[#0F0B1A1A] shadow-[0px_6px_40.1px_0px_#FFFFFF05] py-6 lg:py-4 transition-all duration-300 ease-in-out hover:shadow-[0px_25px_50px_0px_#A259FF40]'>
+      <section className='w-full max-w-[614px] h-auto lg:h-[651px] rounded-[16px] opacity-100 bg-[#0F0B1A1A]  py-6 lg:py-4 transition-all duration-300 ease-in-out shadow-[0px_25px_50px_0px_#A259FF40]'>
 
         {/* title */}
         <h1 className='font-semibold text-[28px] md:text-[33.18px] leading-[100%] tracking-[0%] text-center text-[#E5E7EB] mt-4 lg:mt-0'>Welcome Back</h1>
@@ -76,7 +76,7 @@ export default function Login() {
 
           <div className='flex items-center justify-center mt-6 md:mt-8'>
             <button
-              className="flex items-center justify-center gap-4 w-full max-w-[477px] h-[60px] md:h-[70px] lg:h-[83px] rounded-[12px] bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] font-semibold text-[18px] md:text-[22px] lg:text-[27.65px] leading-[100%] text-white shadow-[0px_-7px_13.4px_0px_#4A00E02E] transition-colors duration-1000 ease-out hover:shadow-[0px_8px_36.2px_0px_#8A38F540] hover:bg-gradient-to-r hover:from-[#8B5CF6] hover:to-[#EC4899] group"
+              className="flex items-center justify-center gap-5 w-full max-w-[477px] h-[60px] md:h-[70px] lg:h-[83px] rounded-[12px] bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] font-semibold text-[18px] md:text-[22px] lg:text-[27.65px] leading-[100%] text-white shadow-[0px_-7px_13.4px_0px_#4A00E02E] transition-colors duration-1000 ease-out hover:shadow-[0px_8px_36.2px_0px_#8A38F540] hover:bg-gradient-to-r hover:from-[#8B5CF6] hover:to-[#EC4899] group"
             >
               Sign in
               <FontAwesomeIcon
@@ -93,21 +93,7 @@ export default function Login() {
         </form>
       </section>
 
-      {/* last items */}
-      <section className='mt-6 md:mt-8 flex flex-col sm:flex-row items-center gap-3 md:gap-4 lg:gap-10 transition-all duration-300 ease-in-out'>
-        <div className='font-poppins text-[10px] md:text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
-          <FontAwesomeIcon icon={faShieldHalved} className="transition-all duration-300 ease-in-out text-xs md:text-sm" />
-          <p>Secure</p>
-        </div>
-        <div className='font-poppins text-[10px] md:text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
-          <FontAwesomeIcon icon={faBolt} className="transition-all duration-300 ease-in-out text-xs md:text-sm" />
-          <p>Fast</p>
-        </div>
-        <div className='font-poppins text-[10px] md:text-[12px] text-[#B0B0B0] flex items-center gap-1 transition-all duration-300 ease-in-out hover:text-white'>
-          <FontAwesomeIcon icon={faMobileScreen} className="transition-all duration-300 ease-in-out text-xs md:text-sm" />
-          <p>Mobile Ready</p>
-        </div>
-      </section>
+     
     </section>
   )
 }
