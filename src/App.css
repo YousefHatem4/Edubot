@@ -76,3 +76,15 @@ html, body {
 * {
   box-sizing: border-box;
 }
+
+
+/* scroll of dashboard */
+/* Hide scrollbar for Chrome, Safari and Edge */
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.scroll-hidden {
+  scrollbar-width: none;
+}

@@ -96,18 +96,18 @@ export default function Register() {
             <div className='flex flex-col sm:flex-row gap-4 md:gap-6 lg:gap-10 w-full max-w-[382px]'>
               <div
                 onClick={() => setRole("Student")}
-                className={`flex-1 w-full sm:w-[149px] h-[80px] md:h-[90px] lg:h-[95px] rounded-[12px] border flex justify-center items-center gap-2 md:gap-3 flex-col cursor-pointer transition-all duration-300 ease-in-out ${role === "Student" ? "border-[#8E2DE2] bg-[#1F1B2E] scale-105" : "border-[#E5E7EB] hover:border-[#6B7280] hover:bg-[#1a1f2e]"}`}
+                className={`flex-1 w-full sm:w-[149px] h-[80px] md:h-[90px] lg:h-[95px] rounded-[12px] border flex justify-center items-center gap-2 md:gap-3 flex-col cursor-pointer transition-all duration-300 ease-in-out ${role === "Student" ? "border-[#F9A8D4] bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] scale-105" : "border-[#E5E7EB] hover:border-[#F9A8D4] hover:bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29]"}`}
               >
-                <FontAwesomeIcon className={`transition-all duration-300 text-xl md:text-2xl ease-in-out ${role === "Student" ? "text-[#A259FF]" : "text-[#8B5CF6] hover:text-[#A259FF]"}`} icon={faGraduationCap} />
-                <h1 className={`transition-all duration-300 ease-in-out text-[14px] md:text-[16px] ${role === "Student" ? "text-[#A259FF]" : "text-[#B0B0B0] hover:text-white"} font-poppins font-medium text-center`}>Student</h1>
+                <FontAwesomeIcon className={`transition-all duration-300 text-xl md:text-2xl ease-in-out ${role === "Student" ? "text-[#8B5CF6]" : "text-[#8B5CF6] hover:text-[#A259FF]"}`} icon={faGraduationCap} />
+                <h1 className={`transition-all duration-300 ease-in-out text-[14px] md:text-[16px] ${role === "Student" ? "text-[#B0B0B0]" : "text-[#B0B0B0] hover:text-white"} font-poppins font-medium text-center`}>Student</h1>
               </div>
 
               <div
                 onClick={() => setRole("Teacher")}
-                className={`flex-1 w-full sm:w-[149px] h-[80px] md:h-[90px] lg:h-[95px] rounded-[12px] border flex justify-center items-center gap-2 md:gap-3 flex-col cursor-pointer transition-all duration-300 ease-in-out ${role === "Teacher" ? "border-[#8E2DE2] bg-[#1F1B2E] scale-105" : "border-[#E5E7EB] hover:border-[#6B7280] hover:bg-[#1a1f2e]"}`}
+                className={`flex-1 w-full sm:w-[149px] h-[80px] md:h-[90px] lg:h-[95px] rounded-[12px] border flex justify-center items-center gap-2 md:gap-3 flex-col cursor-pointer transition-all duration-300 ease-in-out ${role === "Teacher" ? "border-[#F9A8D4]  bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] scale-105" : "border-[#E5E7EB] hover:border-[#F9A8D4] hover:bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29]"}`}
               >
-                <FontAwesomeIcon className={`transition-all duration-300 text-xl md:text-2xl ease-in-out ${role === "Teacher" ? "text-[#A259FF]" : "text-[#EC4899] hover:text-[#EC4899]"}`} icon={faChalkboardUser} />
-                <h1 className={`transition-all duration-300 ease-in-out text-[14px] md:text-[16px] ${role === "Teacher" ? "text-[#A259FF]" : "text-[#B0B0B0] hover:text-white"} font-poppins font-medium text-center`}>Teacher</h1>
+                <FontAwesomeIcon className={`transition-all duration-300 text-xl md:text-2xl ease-in-out ${role === "Teacher" ? "text-[#EC4899]" : "text-[#EC4899] hover:text-[#EC4899]"}`} icon={faChalkboardUser} />
+                <h1 className={`transition-all duration-300 ease-in-out text-[14px] md:text-[16px] ${role === "Teacher" ? "text-[#B0B0B0]" : "text-[#B0B0B0] hover:text-white"} font-poppins font-medium text-center`}>Teacher</h1>
               </div>
             </div>
           </div>
