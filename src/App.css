@@ -88,3 +88,36 @@ html, body {
 .scroll-hidden {
   scrollbar-width: none;
 }
+
+
+/* ! btn gradient design of create chatbot page */
+.btn-gradient {
+  position: relative;
+  overflow: hidden;              /* keep rounded corners on the gradient */
+  background: none;              /* gradient will be drawn by pseudos */
+  border-radius: 12px;           /* match your Tailwind radius */
+  transition: box-shadow .7s ease-in-out; /* keep your shadow anim smooth */
+}
+
+.btn-gradient::before,
+.btn-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity .7s ease-in-out;
+}
+
+.btn-gradient::before {
+  background: linear-gradient(91.27deg, #8A38F5 50.04%, #A78BFA 99.62%);
+  opacity: 1;                    /* initial gradient */
+}
+
+.btn-gradient::after {
+  background: linear-gradient(91.27deg, #8B5CF6 0%, #EC4899 100%);
+  opacity: 0;                    /* hover gradient */
+}
+
+.btn-gradient:hover::before { opacity: 0; }
+.btn-gradient:hover::after  { opacity: 1; }
+

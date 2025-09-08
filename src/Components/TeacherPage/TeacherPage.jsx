@@ -7,6 +7,7 @@ import Setting from './Setting';
 import CreateChat from './CreateChat';
 import Profile from './Profile';
 import { Link } from 'react-router-dom';
+import Upload from './Upload';
 
 export default function TeacherPage() {
   const [dashboard, setDashboard] = useState(true);
@@ -15,6 +16,7 @@ export default function TeacherPage() {
   const [profile, setProfile] = useState(false);
   const [setting, setSetting] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [upload, setUpload] = useState(false); // new state
 
   return (
     <>
@@ -23,7 +25,7 @@ export default function TeacherPage() {
         {/* main body (sidebar + content) */}
         <section className="flex flex-1">
           {/* mobile top bar */}
-          <div className="lg:hidden fixed top-0 left-0 w-full bg-[#0A0710] z-50 flex justify-between items-center px-4 py-3 shadow-md">
+          <div className="lg:hidden fixed top-0 left-0 w-full bg-[#0A0710] z-30 flex justify-between items-center px-4 py-3 shadow-md">
             <div className="flex items-center gap-3">
               <div className="w-[36px] h-[36px] rounded-[10px] bg-gradient-to-br from-[#A259FF] to-[#6B21FF] flex justify-center items-center">
                 <FontAwesomeIcon className="text-white text-[16px]" icon={faGraduationCap} />
@@ -41,9 +43,10 @@ export default function TeacherPage() {
           {/* left sidebar */}
           <section
             className={`lg:w-[350px] mt-2 md:mt-0 min-h-[100vh] fixed bg-[#0F0A1F] backdrop-blur-xl border-r border-white/10 p-5 flex flex-col shadow-2xl
-            transform transition-transform duration-300 
-            ${menuOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+  transform transition-transform duration-300 
+  ${menuOpen ? "translate-x-0 z-30" : "-translate-x-full z-30"} lg:translate-x-0`}
           >
+
             {/* title (hidden on mobile because it’s in topbar) */}
             <div className="hidden lg:block">
               <div className="flex items-center gap-3">
@@ -63,7 +66,7 @@ export default function TeacherPage() {
                 }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300
                 ${dashboard ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
-                  : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
+                    : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
               >
                 <FontAwesomeIcon className="text-white text-2xl" icon={faHome} />
                 <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Dashboard</h1>
@@ -72,11 +75,11 @@ export default function TeacherPage() {
               {/* AI Bot */}
               <div
                 onClick={() => {
-                  setDashboard(false);  setAi(true); setChatbot(false); setProfile(false); setSetting(false); setMenuOpen(false);
+                  setDashboard(false); setAi(true); setChatbot(false); setProfile(false); setSetting(false); setMenuOpen(false);
                 }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300
                 ${ai ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
-                  : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
+                    : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
               >
                 <img src="bot-1.png" className='w-[20px] h-[20px] lg:w-[30px] lg:h-[30px] object-cover' alt="EduBot Logo" />
                 <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Chatbot</h1>
@@ -85,11 +88,11 @@ export default function TeacherPage() {
               {/* Create chatbot */}
               <div
                 onClick={() => {
-                  setDashboard(false);  setAi(false); setChatbot(true); setProfile(false); setSetting(false); setMenuOpen(false);
+                  setDashboard(false); setAi(false); setChatbot(true); setUpload(false); setProfile(false); setSetting(false); setMenuOpen(false);
                 }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300
                 ${Chatbot ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
-                  : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
+                    : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
               >
                 <FontAwesomeIcon className="text-white text-2xl" icon={faPlusCircle} />
                 <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Create Chatbot</h1>
@@ -102,7 +105,7 @@ export default function TeacherPage() {
                 }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300
                 ${profile ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
-                  : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
+                    : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
               >
                 <FontAwesomeIcon className="text-white text-2xl" icon={faUser} />
                 <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Profile</h1>
@@ -111,11 +114,11 @@ export default function TeacherPage() {
               {/* Settings */}
               <div
                 onClick={() => {
-                  setDashboard(false);  setAi(false); setChatbot(false); setProfile(false); setSetting(true); setMenuOpen(false);
+                  setDashboard(false); setAi(false); setChatbot(false); setProfile(false); setSetting(true); setMenuOpen(false);
                 }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300
                 ${setting ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
-                  : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
+                    : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
               >
                 <FontAwesomeIcon className="text-white text-2xl" icon={faGear} />
                 <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Settings</h1>
@@ -135,7 +138,15 @@ export default function TeacherPage() {
           <section className="md:ml-[350px] mt-15 md:mt-0 w-full">
             {dashboard && <Dashboard />}
             {ai && <Ai />}
-            {Chatbot && <CreateChat />}
+            {Chatbot && (
+              <CreateChat
+                onNext={() => {
+                  setChatbot(false);
+                  setUpload(true); // move to Upload
+                }}
+              />
+            )}
+            {upload && <Upload />}
             {profile && <Profile />}
             {setting && <Setting />}
           </section>

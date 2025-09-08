@@ -6,7 +6,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './Components/Layout/Layout'
 import Home from './Components/Home/Home'
-import Upload from './Components/Upload/Upload'
+import Upload from './Components/TeacherPage/Upload'
 import Edubot from './Components/Edubot/Edubot'
 import Register from './Components/Register/Register'
 import Login from './Components/Login/Login'
