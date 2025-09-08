@@ -131,11 +131,11 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 mt-8 lg:mt-10">
               <div className="flex items-center justify-center lg:justify-start gap-2 text-[14px] lg:text-[16px] font-medium">
-                <FontAwesomeIcon className="text-[#4ADE80] text-lg lg:text-xl" icon={faCheck} />
+                <h1 className="text-[#4ADE80] text-lg lg:text-2xl">✓</h1>
                 <span className="text-[#9CA3AF]">Free 14-day trial</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start gap-2 text-[14px] lg:text-[16px] font-medium">
-                <FontAwesomeIcon className="text-[#4ADE80] text-lg lg:text-xl" icon={faCheck} />
+                <h1 className="text-[#4ADE80] text-lg lg:text-2xl">✓</h1>
                 <span className="text-[#9CA3AF]">No credit card required</span>
               </div>
             </div>

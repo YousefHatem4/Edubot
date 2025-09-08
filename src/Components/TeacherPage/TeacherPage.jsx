@@ -146,7 +146,28 @@ export default function TeacherPage() {
                 }}
               />
             )}
-            {upload && <Upload />}
+            {upload && (
+              <Upload
+                goToDashboard={() => {
+                  setDashboard(true);
+                  setAi(false);
+                  setChatbot(false);
+                  setUpload(false);
+                  setProfile(false);
+                  setSetting(false);
+                }}
+                manageBot={() => {
+                  setAi(true);
+                  setChatbot(false);
+                  setUpload(false);
+                  setDashboard(false);
+                  setProfile(false);
+                  setSetting(false);
+                }}
+              />
+            )}
+
+
             {profile && <Profile />}
             {setting && <Setting />}
           </section>
