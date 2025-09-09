@@ -4,9 +4,13 @@ import { faAngleRight, faBookBookmark, faChevronDown, faChevronUp } from '@forta
 import { Link } from 'react-router-dom';
 
 export default function CreateChat({ onNext }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(null); // instead of boolean, track which dropdown is open
   const [selected, setSelected] = useState("Grade");
   const options = ["Grade 7", "Label2", "Label3"];
+
+  const [language, setLanguage] = useState("Language");
+  const languages = ["English", "Arabic", "French"];
+
 
   // form state
   const [botName, setBotName] = useState("");
@@ -114,20 +118,19 @@ export default function CreateChat({ onNext }) {
 
             {/* grade choice */}
             <div className="relative w-full mt-4 md:mt-6">
-
               {/* Select box */}
               <div
-                className="w-full h-[38px] md:h-[42px] rounded-[8px] border-[#A78BFA] border-[1.3px] focus:border-3 hover:border-3 bg-[#0F0A1F] text-[#E5E7EB] px-4 md:px-[18px] py-2 md:py-[11px] font-poppins font-normal text-[12px] md:text-[13.33px] flex justify-between items-center cursor-pointer transition-all duration-100 ease-in-out"
-                onClick={() => setOpen(!open)}
+                className="w-full h-[38px] md:h-[68px] rounded-[8px] border-[#A78BFA] border-[1.3px] focus:border-3 hover:border-3 bg-[#0F0A1F] text-[#E5E7EB] px-4 md:px-[18px] py-2 md:py-[11px] font-poppins font-normal text-[12px] md:text-[13.33px] flex justify-between items-center cursor-pointer transition-all duration-100 ease-in-out"
+                onClick={() => setOpen(open === "grade" ? null : "grade")}
               >
                 {selected}
                 <div className="flex flex-col gap-[2px] pointer-events-none">
-                  <FontAwesomeIcon icon={open ? faChevronUp : faChevronDown} className="text-[#9CA3AF] text-sm" />
+                  <FontAwesomeIcon icon={open === "grade" ? faChevronUp : faChevronDown} className="text-[#9CA3AF] text-sm" />
                 </div>
               </div>
 
               {/* Dropdown options */}
-              {open && (
+              {open === "grade" && (
                 <div className="absolute w-full bg-[#0F0A1F] rounded-[8px] mt-1 shadow-lg z-10">
                   {options.map((option) => (
                     <div
@@ -135,7 +138,7 @@ export default function CreateChat({ onNext }) {
                       className="px-4 md:px-[18px] py-2 md:py-[11px] text-[#E5E7EB] hover:bg-[#A78BFA] cursor-pointer rounded-[8px] text-[12px] md:text-[14px]"
                       onClick={() => {
                         setSelected(option);
-                        setOpen(false);
+                        setOpen(null);
                       }}
                     >
                       {option}
@@ -145,18 +148,39 @@ export default function CreateChat({ onNext }) {
               )}
             </div>
 
-            <label htmlFor="message" className="block mt-8 md:mt-13 mb-3 font-poppins font-normal text-[16px] md:text-[19.2px] leading-[100%] tracking-[0%] text-[#E5E7EB]">
-              Description
-            </label>
-            <textarea
-              id="message"
-              rows="4"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="block w-full h-[120px] md:h-[132px] rounded-[16px] border-1 focus:border-3 hover:border-3 border-[#A78BFA] p-4 md:pt-[18px] md:pr-[18px] md:pb-[90px] md:pl-[18px] bg-[#0F0A1F] font-poppins font-normal text-[14px] md:text-[16px] leading-[24px] tracking-[0%] align-middle text-[#9CA3AF] resize-none overflow-hidden focus:outline-none  focus:border-[#A78BFA] transition-all duration-100 ease-in-out"
-              placeholder="Describe what this bot will help with..."
-              required
-            ></textarea>
+            {/* language choice */}
+            <div className="relative w-full mt-4 md:mt-6">
+              {/* Select box */}
+              <div
+                className="w-full h-[38px] md:h-[68px] rounded-[8px] border-[#A78BFA] border-[1.3px] focus:border-3 hover:border-3 bg-[#0F0A1F] text-[#E5E7EB] px-4 md:px-[18px] py-2 md:py-[11px] font-poppins font-normal text-[12px] md:text-[13.33px] flex justify-between items-center cursor-pointer transition-all duration-100 ease-in-out"
+                onClick={() => setOpen(open === "language" ? null : "language")}
+              >
+                {language}
+                <div className="flex flex-col gap-[2px] pointer-events-none">
+                  <FontAwesomeIcon icon={open === "language" ? faChevronUp : faChevronDown} className="text-[#9CA3AF] text-sm" />
+                </div>
+              </div>
+
+              {open === "language" && (
+                <div className="absolute w-full bg-[#0F0A1F] rounded-[8px] mt-1 shadow-lg z-50">
+                  {languages.map((lang) => (
+                    <div
+                      key={lang}
+                      className="px-4 md:px-[18px] py-2 md:py-[11px] text-[#E5E7EB] hover:bg-[#A78BFA] cursor-pointer rounded-[8px] text-[12px] md:text-[14px]"
+                      onClick={() => {
+                        setLanguage(lang);
+                        setOpen(null);
+                      }}
+                    >
+                      {lang}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </div>
+
+           
 
             <div className="flex justify-center mt-10 md:mt-14">
               <button

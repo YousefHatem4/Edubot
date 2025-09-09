@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 
-export default function Upload({ goToDashboard, manageBot }) {
+export default function Upload({ goToDashboard }) {
   const [files, setFiles] = useState([]) // store uploaded files
   const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false); // Control success modal display
@@ -190,9 +190,11 @@ export default function Upload({ goToDashboard, manageBot }) {
                 <button onClick={goToDashboard} className='w-full md:w-[224px] h-[50px] md:h-[59px] rounded-[12px] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] shadow-[0px_8px_36.2px_0px_#8A38F540,0px_-7px_13.4px_0px_#4A00E05C] font-poppins font-normal text-[16px] md:text-[19.2px] cursor-pointer leading-[100%] tracking-[0%] text-white'>
                   Go to Dashboard
                 </button>
-                <button onClick={manageBot} className='w-full md:w-[224px] h-[50px] md:h-[59px] rounded-[12px] bg-[#6B7280] shadow-[0px_8px_36.2px_0px_#8A38F526,0px_-7px_13.4px_0px_#4A00E00A] font-poppins font-normal text-[16px] md:text-[19.2px] cursor-pointer leading-[100%] tracking-[0%] text-white opacity-100'>
-                  Manage Bot
-                </button>
+                <Link to={'/managebot'}>
+                  <button className='w-full md:w-[224px] h-[50px] md:h-[59px] rounded-[12px] bg-[#6B7280] shadow-[0px_8px_36.2px_0px_#8A38F526,0px_-7px_13.4px_0px_#4A00E00A] font-poppins font-normal text-[16px] md:text-[19.2px] cursor-pointer leading-[100%] tracking-[0%] text-white opacity-100'>
+                    Manage Bot
+                  </button>
+                </Link>
               </div>
             </section>
           </div>

@@ -156,14 +156,6 @@ export default function TeacherPage() {
                   setProfile(false);
                   setSetting(false);
                 }}
-                manageBot={() => {
-                  setAi(true);
-                  setChatbot(false);
-                  setUpload(false);
-                  setDashboard(false);
-                  setProfile(false);
-                  setSetting(false);
-                }}
               />
             )}
 
