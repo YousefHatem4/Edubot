@@ -220,7 +220,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-           
+
               </div>
 
               {/* Desktop view */}
@@ -244,9 +244,11 @@ export default function Dashboard() {
 
                   {/* Actions */}
                   <div className='flex items-center gap-2 md:gap-3 justify-center'>
-                    <button className='w-[70px] md:w-[79px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
-                      Manage
-                    </button>
+                    <Link to={'/managebot'}>
+                      <button className='w-[70px] md:w-[69px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
+                        Manage
+                      </button>
+                    </Link>
                     <button className='w-[60px] md:w-[67px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] bg-[#EF4444] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
                       Delete
                     </button>
@@ -277,9 +279,11 @@ export default function Dashboard() {
 
                   {/* Actions */}
                   <div className='flex items-center gap-2 md:gap-3 justify-center'>
-                    <button className='w-[70px] md:w-[79px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
-                      Manage
-                    </button>
+                    <Link to={'/managebot'}>
+                      <button className='w-[70px] md:w-[69px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
+                        Manage
+                      </button>
+                    </Link>
                     <button className='w-[60px] md:w-[67px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] bg-[#EF4444] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
                       Delete
                     </button>
@@ -310,9 +314,11 @@ export default function Dashboard() {
 
                   {/* Actions */}
                   <div className='flex items-center gap-2 md:gap-3 justify-center'>
-                    <button className='w-[70px] md:w-[79px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
-                      Manage
-                    </button>
+                    <Link to={'/managebot'}>
+                      <button className='w-[70px] md:w-[69px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
+                        Manage
+                      </button>
+                    </Link>
                     <button className='w-[60px] md:w-[67px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] bg-[#EF4444] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
                       Delete
                     </button>
@@ -343,9 +349,11 @@ export default function Dashboard() {
 
                   {/* Actions */}
                   <div className='flex items-center gap-2 md:gap-3 justify-center'>
-                    <button className='w-[70px] md:w-[79px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
-                      Manage
-                    </button>
+                    <Link to={'/managebot'}>
+                      <button className='w-[70px] md:w-[69px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
+                        Manage
+                      </button>
+                    </Link>
                     <button className='w-[60px] md:w-[67px] h-[35px] md:h-[41px] rounded-[10px] md:rounded-[12px] bg-[#EF4444] font-poppins font-bold text-[10px] md:text-[12px] text-white'>
                       Delete
                     </button>
@@ -452,9 +460,9 @@ export default function Dashboard() {
                   </div>
                   <div className='flex items-center justify-center'>
                     <button className='w-[70px] md:w-[57px] h-[41px] md:h-[43px] rounded-[10px] md:rounded-[12px] border border-[#FFFFFF14] shadow-[0_8px_22px_0_#8B5CF640] font-normal text-[11px] md:text-[13.33px] text-white'>
-                      View 
+                      View
                     </button>
-                   
+
                   </div>
                 </div>
                 {/* line under header */}

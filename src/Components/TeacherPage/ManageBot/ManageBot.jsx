@@ -1,13 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import BotInfo from './BotInfo';
 import Files from './Files';
-import Setting from '../Setting';
+import Setting from './Setting';
 
 export default function ManageBot() {
-    const [activeTab, setActiveTab] = useState("botinfo");
+    const location = useLocation();
+    const defaultTab = location.state?.defaultTab || "botinfo";
+
+    const [activeTab, setActiveTab] = useState(defaultTab);
+
+    useEffect(() => {
+        if (defaultTab) setActiveTab(defaultTab);
+    }, [defaultTab]);
 
     const tabClasses = (tab) =>
         `font-poppins font-medium text-[14px] md:text-[16px] leading-[100%] w-auto md:w-[92.54px] h-[41.6px] flex items-center justify-center transition-all duration-200 cursor-pointer ${activeTab === tab
@@ -42,15 +49,9 @@ export default function ManageBot() {
 
                 {/* navbar */}
                 <nav className="mt-8 md:mt-12 lg:mt-15 flex items-center gap-3 md:gap-4 lg:gap-5 overflow-x-auto pb-2 md:pb-0">
-                    <h1 onClick={() => setActiveTab("botinfo")} className={tabClasses("botinfo")}>
-                        Bot Info
-                    </h1>
-                    <h1 onClick={() => setActiveTab("files")} className={tabClasses("files")}>
-                        Files
-                    </h1>
-                    <h1 onClick={() => setActiveTab("settings")} className={tabClasses("settings")}>
-                        Settings
-                    </h1>
+                    <h1 onClick={() => setActiveTab("botinfo")} className={tabClasses("botinfo")}>Bot Info</h1>
+                    <h1 onClick={() => setActiveTab("files")} className={tabClasses("files")}>Files</h1>
+                    <h1 onClick={() => setActiveTab("settings")} className={tabClasses("settings")}>Settings</h1>
                 </nav>
 
                 <section className='mt-6 md:mt-8 lg:mt-10'>
@@ -59,7 +60,6 @@ export default function ManageBot() {
                     {activeTab === "settings" && <Setting />}
                 </section>
             </section>
-
             {/* footer section */}
             <footer className='h-auto z-100 lg:h-[96px] opacity-100 bg-[linear-gradient(93.87deg,#0A0716_-42.23%,#1A1726_110.13%)] flex flex-col lg:flex-row items-center justify-between px-4 md:px-8 lg:px-30 py-6 lg:py-10 gap-4 lg:gap-0'>
                 {/* title */}

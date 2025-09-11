@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBook, faChartBar, faGear, faGraduationCap, faHome, faRobot, faUsers, faBars, faXmark, faPlusCircle, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import Dashboard from './Dashboard';
-import Ai from './Ai';
-import Setting from './Setting';
+import Setting from './ManageBot/Setting';
 import CreateChat from './CreateChat';
 import Profile from './Profile';
 import { Link } from 'react-router-dom';
 import Upload from './Upload';
+
 
 export default function TeacherPage() {
   const [dashboard, setDashboard] = useState(true);
@@ -72,8 +72,8 @@ export default function TeacherPage() {
                 <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Dashboard</h1>
               </div>
 
-              {/* AI Bot */}
-              <div
+              {/* manage bot*/}
+              <Link to={'/managebot'}
                 onClick={() => {
                   setDashboard(false); setAi(true); setChatbot(false); setProfile(false); setSetting(false); setMenuOpen(false);
                 }}
@@ -81,9 +81,9 @@ export default function TeacherPage() {
                 ${ai ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
                     : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
               >
-                <img src="bot-1.png" className='w-[20px] h-[20px] lg:w-[30px] lg:h-[30px] object-cover' alt="EduBot Logo" />
-                <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Chatbot</h1>
-              </div>
+                <img src="setting.png" className='w-[20px] h-[20px] lg:w-[30px] lg:h-[30px] object-cover' alt="EduBot Logo" />
+                <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Manage Bot</h1>
+              </Link>
 
               {/* Create chatbot */}
               <div
@@ -112,17 +112,29 @@ export default function TeacherPage() {
               </div>
 
               {/* Settings */}
-              <div
+              <Link
+                to={'/managebot'}
+                state={{ defaultTab: "settings" }}
                 onClick={() => {
-                  setDashboard(false); setAi(false); setChatbot(false); setProfile(false); setSetting(true); setMenuOpen(false);
+                  setDashboard(false);
+                  setAi(false);
+                  setChatbot(false);
+                  setProfile(false);
+                  setSetting(true);
+                  setMenuOpen(false);
                 }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300
-                ${setting ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
-                    : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
+    ${setting
+                    ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
+                    : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`
+                }
               >
                 <FontAwesomeIcon className="text-white text-2xl" icon={faGear} />
-                <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Settings</h1>
-              </div>
+                <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">
+                  Settings
+                </h1>
+              </Link>
+
 
               {/* Logout */}
               <Link to={'/login'}
@@ -137,7 +149,6 @@ export default function TeacherPage() {
           {/* right content */}
           <section className="md:ml-[350px] mt-15 md:mt-0 w-full">
             {dashboard && <Dashboard />}
-            {ai && <Ai />}
             {Chatbot && (
               <CreateChat
                 onNext={() => {
@@ -161,7 +172,7 @@ export default function TeacherPage() {
 
 
             {profile && <Profile />}
-            {setting && <Setting />}
+
           </section>
         </section>
 
