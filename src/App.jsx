@@ -14,6 +14,7 @@ import ForgetPass from './Components/ForgetPass/ForgetPass'
 import TeacherPage from './Components/TeacherPage/TeacherPage'
 import BotInfo from './Components/TeacherPage/ManageBot/BotInfo';
 import ManageBot from './Components/TeacherPage/ManageBot/ManageBot';
+import StudentPage from './Components/StudentPage/StudentPage';
 
 
 const routers = createBrowserRouter([
@@ -28,6 +29,7 @@ const routers = createBrowserRouter([
       { path: "login", element: <Login /> },
       { path: "forgetpass", element: <ForgetPass /> },
       { path: "teacher-page", element: <TeacherPage /> },
+      { path: "student-page", element: <StudentPage /> },
       { path: "botinfo", element: <BotInfo /> },
       { path: "managebot", element: <ManageBot /> },
       
