@@ -36,7 +36,7 @@ export default function StudentProfile() {
 
                             <div className="flex flex-wrap justify-center md:justify-start items-center gap-2">
                                 <div className="w-auto min-w-[63px] h-[28px] px-2 rounded-full opacity-100 bg-[#A78BFA33] flex items-center justify-center">
-                                    <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#8B5CF6]">Teacher</h1>
+                                    <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#8B5CF6]">Student</h1>
                                 </div>
                                 <div className="w-auto min-w-[63px] h-[28px] px-2 rounded-full opacity-100 bg-[#22C55E33] flex items-center justify-center">
                                     <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#22C55E]">Active</h1>
@@ -81,7 +81,7 @@ export default function StudentProfile() {
                             </div>
                             <div>
                                 <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>Role</p>
-                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>Teacher</h1>
+                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>Student</h1>
                             </div>
                         </div>
 
@@ -121,9 +121,7 @@ export default function StudentProfile() {
                             <div className="w-auto min-w-[63px] h-[28px] px-2 rounded-full opacity-100 bg-[#22C55E33] flex items-center justify-center">
                                 <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#22C55E]">Active</h1>
                             </div>
-                            <button className='w-auto min-w-[91px] h-[36px] px-4 rounded-[12px] bg-gradient-to-r from-[#A855F7] to-[#EC4899] font-poppins font-semibold text-xs sm:text-sm md:text-[14px] leading-[20px] text-white text-center align-middle'>
-                                Manage
-                            </button>
+                           
                         </div>
                     </section>
                 </section>

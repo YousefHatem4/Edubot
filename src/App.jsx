@@ -15,6 +15,7 @@ import TeacherPage from './Components/TeacherPage/TeacherPage'
 import BotInfo from './Components/TeacherPage/ManageBot/BotInfo';
 import ManageBot from './Components/TeacherPage/ManageBot/ManageBot';
 import StudentPage from './Components/StudentPage/StudentPage';
+import StudentChatbot from './Components/StudentPage/StudentChatbot';
 
 
 const routers = createBrowserRouter([
@@ -24,7 +25,7 @@ const routers = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "upload", element: <Upload /> },
-      { path: "edubot", element: <Edubot /> },
+      { path: "edubot", element: <StudentChatbot /> },
       { path: "register", element: <Register /> },
       { path: "login", element: <Login /> },
       { path: "forgetpass", element: <ForgetPass /> },
