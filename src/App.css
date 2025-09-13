@@ -236,3 +236,26 @@ html, body {
     box-shadow: 0 0 5px #8B5CF6;
   }
 }
+
+/* sidebar scroll in student profile in edubot in small screen */
+
+/* Hide scrollbar but allow scroll */
+.sidebar::-webkit-scrollbar {
+  display: none; /* Chrome, Edge, Safari */
+}
+
+.sidebar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+/* Hide scrollbar but allow scroll */
+.profile-nav::-webkit-scrollbar {
+  display: none; /* Chrome, Edge, Safari */
+}
+
+.profile-nav {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+

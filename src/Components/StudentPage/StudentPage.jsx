@@ -1,16 +1,19 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBook, faChartBar, faGear, faGraduationCap, faHome, faRobot, faUsers, faBars, faXmark, faPlusCircle, faUser, faRightFromBracket, faBookmark, faBookBookmark } from '@fortawesome/free-solid-svg-icons'
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import StudentProfile from './StudentProfile';
 import StudentStudyArea from './StudentStudyArea';
 
 
 
 export default function StudentPage() {
-    const [studentProfile, setStudentProfile] = useState(true);
+    const location = useLocation();
+    const openTab = location.state?.openTab; // "studyArea" or undefined
+
+    const [studentProfile, setStudentProfile] = useState(openTab !== "studyArea");
     const [chatbot, setChatbot] = useState(false);
-    const [studyArea, setStudyArea] = useState(false);
+    const [studyArea, setStudyArea] = useState(openTab === "studyArea");
     const [menuOpen, setMenuOpen] = useState(false);
     return <>
         {/* full page wrapper */}
@@ -35,7 +38,7 @@ export default function StudentPage() {
 
                 {/* left sidebar */}
                 <section
-                    className={`lg:w-[350px] mt-2 md:mt-0 min-h-[100vh] fixed bg-[#0F0A1F] backdrop-blur-xl border-r border-white/10 p-5 flex flex-col shadow-2xl
+                    className={`lg:w-[324px] mt-2 md:mt-0 min-h-[100vh] fixed bg-[#0F0A1F] backdrop-blur-xl border-r border-white/10 p-5 flex flex-col shadow-2xl
   transform transition-transform duration-300 
   ${menuOpen ? "translate-x-0 z-30" : "-translate-x-full z-30"} lg:translate-x-0`}
                 >
@@ -69,7 +72,7 @@ export default function StudentPage() {
 
                         {/*  chatbot */}
                         <Link to={'/edubot'}
-                        
+
                             className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300
                 ${chatbot ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-[0px_8.63px_39.03px_0px_#8A38F540,0px_-7.55px_14.45px_0px_#4A00E05C] scale-105'
                                     : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
@@ -91,7 +94,7 @@ export default function StudentPage() {
                             <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Study Area</h1>
                         </div>
 
-                 
+
 
 
                         {/* Logout */}
@@ -105,11 +108,10 @@ export default function StudentPage() {
                 </section>
 
                 {/* right content */}
-                <section className="md:ml-[350px] mt-15 md:mt-0 w-full">
+                <section className="md:ml-[324px] mt-15 md:mt-0 w-full">
                     {studentProfile && <StudentProfile />}
-                   
                     {studyArea && <StudentStudyArea />}
-                  
+
 
 
 
