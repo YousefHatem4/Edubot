@@ -1,26 +1,259 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState, forwardRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBook,
-  faChartBar,
-  faGear,
-  faGraduationCap,
-  faHome,
-  faRobot,
-  faUsers,
   faBars,
-  faXmark,
-  faPlusCircle,
-  faUser,
-  faRightFromBracket,
-  faBookmark,
   faBookBookmark,
-  faPenToSquare,
-  faChevronUp,
   faChevronDown,
+  faChevronUp,
+  faGraduationCap,
+  faPenToSquare,
+  faRightFromBracket,
+  faUser,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { faClock, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
+
+/* tiny helper to compose tailwind classes clearly while keeping styles unchanged */
+function cn(...parts) {
+  return parts.filter(Boolean).join(" ");
+}
+
+/* ---------- Subcomponents ---------- */
+
+const HeaderMobile = ({ menuOpen, setMenuOpen }) => (
+  <div className="lg:hidden fixed top-0 left-0 w-full bg-gradient-to-r from-[#0F0A1F] to-[#1E1B29] z-40 flex justify-between items-center px-4 py-3 shadow-md">
+    <div className="flex items-center gap-3">
+      <div className="w-[36px] h-[36px] rounded-[10px] bg-gradient-to-br from-[#A259FF] to-[#6B21FF] flex justify-center items-center">
+        <FontAwesomeIcon className="text-white text-[16px]" icon={faGraduationCap} />
+      </div>
+      <h1 className="font-inter font-extrabold text-[18px] text-white">EduBot</h1>
+    </div>
+    <button
+      onClick={() => setMenuOpen(!menuOpen)}
+      className="text-white text-xl focus:outline-none cursor-pointer"
+    >
+      <FontAwesomeIcon icon={menuOpen ? faXmark : faBars} />
+    </button>
+  </div>
+);
+
+const SidebarHeader = ({ collapsed, setCollapsed }) => (
+  <div className="hidden lg:block">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="w-[45px] h-[45px] rounded-[8px] bg-[linear-gradient(135deg,#8E2DE2_5%,#4A00E0_95%)] flex justify-center items-center shadow-lg transform transition-transform duration-300 hover:scale-110">
+          <img
+            src="bot-1.png"
+            className="w-[20px] h-[20px] lg:w-[30px] lg:h-[30px] object-cover"
+            alt="EduBot Logo"
+          />
+        </div>
+        <h1
+          className={cn(
+            "font-inter font-semibold text-[27.65px] text-white tracking-wide transition-all duration-300 ease-in-out",
+            collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+          )}
+        >
+          EduBot
+        </h1>
+      </div>
+      <div
+        className="cursor-pointer transform transition-transform duration-300 hover:scale-110 hidden lg:block"
+        onClick={() => setCollapsed((v) => !v)}
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={cn("transform transition-transform duration-500", collapsed ? "rotate-180" : "")}
+        >
+          <path d="M22 6L14 6" stroke="#E5E7EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M2 6C2 4.59987 2 3.8998 2.27248 3.36502C2.51217 2.89462 2.89462 2.51217 3.36502 2.27248C3.8998 2 4.59987 2 6 2C7.40013 2 8.1002 2 8.63498 2.27248C9.10538 2.51217 9.48783 2.89462 9.72752 3.36502C10 3.8998 10 4.59987 10 6C10 7.40013 10 8.1002 9.72752 8.63498C9.48783 9.10538 9.10538 9.48783 8.63498 9.72752C8.1002 10 7.40013 10 6 10C4.59987 10 3.8998 10 3.36502 9.72752C2.89462 9.4878 2.51217 9.10538 2.27248 8.63498C2 8.1002 2 7.40013 2 6Z"
+            stroke="#E5E7EB"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M2 18C2 16.5999 2 15.8998 2.27248 15.365C2.51217 14.8946 2.89462 14.5122 3.36502 14.2725C3.8998 14 4.59987 14 6 14C7.40013 14 8.1002 14 8.63498 14.2725C9.10538 14.5122 9.48783 14.8946 9.72752 15.365C10 15.8998 10 16.5999 10 18C10 19.4001 10 20.1002 9.72752 20.635C9.48783 21.1054 9.10538 21.4878 8.63498 21.7275C8.1002 22 7.40013 22 6 22C4.59987 22 3.8998 22 3.36502 21.7275C2.89462 21.4878 2.51217 21.1054 2.27248 20.635C2 20.1002 2 19.4001 2 18Z"
+            stroke="#FFFFFF"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M14 18C14 16.5999 14 15.8998 14.2725 15.365C14.5122 14.8946 14.8946 14.5122 15.365 14.2725C15.8998 14 16.5999 14 18 14C19.4001 14 20.1002 14 20.635 14.2725C21.1054 14.5122 21.4878 14.8946 21.7275 15.365C22 15.8998 22 16.5999 22 18C22 19.4001 22 20.1002 21.7275 20.635C21.4878 21.1054 21.1054 21.4878 20.635 21.7275C20.1002 22 19.4001 22 18 22C16.5999 22 15.8998 22 15.365 21.7275C14.8946 21.4878 14.5122 21.1054 14.2725 20.635C14 20.1002 14 19.4001 14 18Z"
+            stroke="#E5E7EB"
+            strokeWidth="1.5"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+);
+
+/* ProfileNav with forwardRef preserved to keep outside-click logic identical */
+const ProfileNav = forwardRef(
+  (
+    {
+      showProfileNav,
+      isMobile,
+      collapsed,
+      studentProfile,
+      chatbot,
+      studyArea,
+      setMenuOpen,
+      navigate,
+    },
+    ref
+  ) => (
+    <section
+      ref={ref}
+      className={cn(
+        "transition-all duration-300 ease-out profile-nav overflow-x-hidden",
+        !isMobile
+          ? cn(
+            "absolute bottom-full left-0 mb-2 z-50",
+            collapsed ? "w-[220px]" : "w-[300px]",
+            showProfileNav
+              ? "opacity-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 translate-y-2 pointer-events-none"
+          )
+          : cn(
+            "relative w-full z-50",
+            showProfileNav ? "opacity-100" : "opacity-0 pointer-events-none"
+          )
+      )}
+    >
+      <div
+        className={cn(
+          isMobile ? "max-h-64 overflow-y-auto" : "",
+          "pt-3 pr-4 pb-3 pl-4 gap-6 rounded-[14px] bg-gradient-to-b from-[#0F0A1F]/90 to-[#1E1B29]/90 shadow-2xl w-full",
+          "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        )}
+      >
+        <h1
+          className={cn(
+            "font-poppins font-semibold text-[15px] leading-[24px] tracking-[0.01em] text-[#9CA3AF] text-center",
+            collapsed && !isMobile ? "truncate" : ""
+          )}
+        >
+          MohamedBB@@gmail.com
+        </h1>
+
+        <section
+          className={cn(
+            "mt-2 flex flex-col gap-2 p-2 w-full",
+            collapsed && !isMobile ? "items-center" : ""
+          )}
+        >
+          <Link
+            to={"/student-page"}
+            className={cn(
+              "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
+              collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
+              studentProfile
+                ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
+                : "hover:bg-white/10"
+            )}
+            onClick={() => isMobile && setMenuOpen(false)}
+          >
+            <FontAwesomeIcon className="text-white text-xl" icon={faUser} />
+            {!collapsed || isMobile ? (
+              <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
+                Profile
+              </h1>
+            ) : null}
+          </Link>
+
+          <Link
+            to={"/edubot"}
+            className={cn(
+              "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
+              collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
+              chatbot
+                ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
+                : "hover:bg-white/10"
+            )}
+            onClick={() => isMobile && setMenuOpen(false)}
+          >
+            <img
+              src="bot-1.png"
+              className="w-[20px] h-[20px] lg:w-[24px] lg:h-[24px] object-cover"
+              alt="EduBot Logo"
+            />
+            {!collapsed || isMobile ? (
+              <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
+                My Chatbot
+              </h1>
+            ) : null}
+          </Link>
+
+          <div
+            onClick={() => {
+              navigate("/student-page", { state: { openTab: "studyArea" } });
+              if (isMobile) setMenuOpen(false);
+            }}
+            className={cn(
+              "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
+              collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
+              studyArea
+                ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
+                : "hover:bg-white/10"
+            )}
+          >
+            <FontAwesomeIcon className="text-white text-xl" icon={faBookBookmark} />
+            {!collapsed || isMobile ? (
+              <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
+                Study Area
+              </h1>
+            ) : null}
+          </div>
+
+          <Link
+            to={"/login"}
+            className={cn(
+              "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
+              collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
+              "hover:bg-white/10"
+            )}
+            onClick={() => isMobile && setMenuOpen(false)}
+          >
+            <FontAwesomeIcon className="text-[#EF4444] text-2xl" icon={faRightFromBracket} />
+            {!collapsed || isMobile ? (
+              <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
+                Logout
+              </h1>
+            ) : null}
+          </Link>
+        </section>
+      </div>
+    </section>
+  )
+);
+
+const MessageBubble = ({ message, isBot }) => (
+  <div className={cn("max-w-[85%] md:max-w-[70%] p-4 rounded-2xl", isBot ? "bg-[#2D2A3B] text-[#F3F4F6]" : "bg-[#9333EA6B] text-[#F3F4F6]")}>
+    <p className="font-poppins font-normal text-[13.33px] leading-[160%] break-words">{message.text}</p>
+    {isBot && message.explanation && (
+      <div className="mt-2 pt-2 border-t border-[#FFFFFF33]">
+        <p className="text-[12px] text-[#CCCCCC] break-words">{message.explanation}</p>
+      </div>
+    )}
+  </div>
+);
+
+const BotTyping = () => (
+  <div className="max-w-[85%] md:max-w-[70%] p-4 rounded-2xl bg-[#2D2A3B]">
+    <div className="flex space-x-2">
+      <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" />
+      <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" style={{ animationDelay: "0.2s" }} />
+      <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" style={{ animationDelay: "0.4s" }} />
+    </div>
+  </div>
+);
+
+/* ---------- Main Component ---------- */
 
 export default function StudentChatbot() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,237 +272,178 @@ export default function StudentChatbot() {
   const [isTyping, setIsTyping] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isTablet, setIsTablet] = useState(window.innerWidth < 1280 && window.innerWidth >= 768);
-
   const options = ["chemistry Bot", "biology Bot", "English Bot"];
   const [showLine, setShowLine] = useState(collapsed);
 
-  // Handle window resize for responsive behavior
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const profileNavRef = useRef(null);
+
+  // Close profile nav on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (profileNavRef.current && !profileNavRef.current.contains(e.target)) {
+        setShowProfileNav(false);
+      }
+    }
+    if (showProfileNav) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showProfileNav]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  // lock page scroll like original
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+    };
+  }, []);
+
+  // responsive behavior identical to original
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
       setIsMobile(width < 1024);
       setIsTablet(width < 1280 && width >= 768);
-
-      // Auto-close sidebar on mobile when switching to desktop
-      if (width >= 1024) {
-        setMenuOpen(false);
-      }
-
-      // Auto-expand sidebar on tablet/desktop
-      if (width >= 768) {
-        setCollapsed(false);
-      }
+      if (width >= 1024) setMenuOpen(false);
+      if (width >= 768) setCollapsed(false);
     };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
-
-    // Add user message
-    const newMessage = {
-      text: inputMessage,
-      sender: 'user',
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, newMessage]);
+    const newMessage = { text: inputMessage, sender: "user", timestamp: new Date() };
+    setMessages((prev) => [...prev, newMessage]);
     setInputMessage("");
     setIsTyping(true);
-
-    // Simulate bot response after a delay
     setTimeout(() => {
       const botResponses = {
-        "physics": "Newton's First Law states that an object will remain at rest or in uniform motion in a straight line unless acted upon by an external force. This is also known as the law of inertia.",
-        "math": "The Pythagorean theorem states that in a right triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides.",
-        "chemistry": "The periodic table is a tabular arrangement of chemical elements, organized by atomic number, electron configuration, and recurring chemical properties.",
-        "default": "I'm here to help with your studies! Could you please clarify which subject you need assistance with?"
+        physics:
+          "Newton's First Law states that an object will remain at rest or in uniform motion in a straight line unless acted upon by an external force. This is also known as the law of inertia.",
+        math: "The Pythagorean theorem states that in a right triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides.",
+        chemistry:
+          "The periodic table is a tabular arrangement of chemical elements, organized by atomic number, electron configuration, and recurring chemical properties.",
+        default:
+          "I'm here to help with your studies! Could you please clarify which subject you need assistance with?",
       };
-
       const subject = selected.toLowerCase();
       const botMessage = {
         text: botResponses[subject] || botResponses.default,
-        sender: 'bot',
+        sender: "bot",
         timestamp: new Date(),
-        explanation: subject === 'physics' ? "For example, a book on a table stays put until you push it. Similarly, a moving ball would continue moving forever if friction and air resistance didn't slow it down." : ""
+        explanation:
+          subject === "physics"
+            ? "For example, a book on a table stays put until you push it. Similarly, a moving ball would continue moving forever if friction and air resistance didn't slow it down."
+            : "",
       };
-
-      setMessages(prev => [...prev, botMessage]);
+      setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
     }, 1500);
   };
 
+  // collapse transitions identical
   useEffect(() => {
     if (collapsed) {
-      setContentVisible(false); // hide full content immediately
+      setContentVisible(false);
       const timer = setTimeout(() => {
         setSidebarWidth(isMobile ? 0 : 153);
-        setShowLine(true); // show the line after collapse animation
+        setShowLine(true);
       }, 250);
       return () => clearTimeout(timer);
     } else {
       setSidebarWidth(isMobile ? 280 : 324);
-      setShowLine(false); // hide line immediately when expanding
+      setShowLine(false);
       const timer = setTimeout(() => {
-        setContentVisible(true); // show full content after expand animation
+        setContentVisible(true);
       }, 250);
       return () => clearTimeout(timer);
     }
   }, [collapsed, isMobile]);
 
-  // Close sidebar when clicking outside on mobile
+  // mobile sidebar outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isMobile && menuOpen && !event.target.closest('.sidebar')) {
+      if (isMobile && menuOpen && !event.target.closest(".sidebar")) {
         setMenuOpen(false);
       }
     };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobile, menuOpen]);
 
   return (
-    <section className="flex flex-col min-h-screen">
-      {/* main body (sidebar + content) */}
-      <section className="flex flex-1">
-        {/* mobile top bar */}
-        <div className="lg:hidden fixed top-0 left-0 w-full bg-gradient-to-r from-[#0F0A1F] to-[#1E1B29] z-30 flex justify-between items-center px-4 py-3 shadow-md">
-          <div className="flex items-center gap-3">
-            <div className="w-[36px] h-[36px] rounded-[10px] bg-gradient-to-br from-[#A259FF] to-[#6B21FF] flex justify-center items-center">
-              <FontAwesomeIcon
-                className="text-white text-[16px]"
-                icon={faGraduationCap}
-              />
-            </div>
-            <h1 className="font-inter font-extrabold text-[18px] text-white">
-              EduBot
-            </h1>
-          </div>
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="text-white text-xl focus:outline-none cursor-pointer"
-          >
-            <FontAwesomeIcon icon={menuOpen ? faXmark : faBars} />
-          </button>
-        </div>
+    <section className="flex flex-col h-screen overflow-hidden overflow-x-hidden overscroll-contain">
+      <section className="flex flex-1 min-h-0">
+        <HeaderMobile menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-        {/* left sidebar */}
-
+        {/* Sidebar */}
         <section
-          className={`sidebar min-h-screen bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] backdrop-blur-xl 
-  border-r border-white/10 p-5 flex flex-col gap-50 shadow-2xl
-  transform transition-all duration-500 ease-in-out
-  fixed lg:static z-40 justify-between
-  ${menuOpen ? "translate-x-0" : "-translate-x-[200px]"} lg:translate-x-0
-  overflow-y-auto overflow-x-hidden max-h-screen lg:overflow-y-visible lg:overflow-x-visible lg:max-h-full`} // <-- vertical scroll only
-          style={{ width: isMobile ? (menuOpen ? '280px' : '0') : `${sidebarWidth}px` }}
+          className={cn(
+            "sidebar bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] backdrop-blur-xl border-r border-white/10 p-5 flex flex-col justify-between shadow-2xl transform transition-all duration-500 ease-in-out fixed lg:sticky lg:top-0 z-30 h-screen min-h-0 overflow-y-auto overflow-x-hidden",
+            "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
+            menuOpen ? "translate-x-0" : "-translate-x-[200px]",
+            "lg:translate-x-0"
+          )}
+          style={{ width: isMobile ? (menuOpen ? "280px" : "0") : `${sidebarWidth}px` }}
         >
+          <div className="min-w-0">
+            <SidebarHeader collapsed={collapsed} setCollapsed={setCollapsed} />
 
-          <div>
-            {/* title (hidden on mobile because it's in topbar) */}
-            <div className="hidden lg:block">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-[45px] h-[45px] rounded-[8px] bg-[linear-gradient(135deg,#8E2DE2_5%,#4A00E0_95%)] flex justify-center items-center shadow-lg transform transition-transform duration-300 hover:scale-110">
-                    <img
-                      src="bot-1.png"
-                      className="w-[20px] h-[20px] lg:w-[30px] lg:h-[30px] object-cover"
-                      alt="EduBot Logo"
-                    />
-                  </div>
-                  <h1
-                    className={`font-inter font-semibold text-[27.65px] text-white tracking-wide
-                      transition-all duration-300 ease-in-out
-                      ${collapsed
-                        ? "opacity-0 w-0 overflow-hidden"
-                        : "opacity-100 w-auto"
-                      }`}
-                  >
-                    EduBot
-                  </h1>
-                </div>
-                {/* svg icon - hidden on mobile */}
-                <div
-                  className="cursor-pointer transform transition-transform duration-300 hover:scale-110 hidden lg:block"
-                  onClick={() => setCollapsed(!collapsed)}
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={`transform transition-transform duration-500 ${collapsed ? "rotate-180" : ""}`}
-                  >
-                    <path
-                      d="M22 6L14 6"
-                      stroke="#E5E7EB"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M2 6C2 4.59987 2 3.8998 2.27248 3.36502C2.51217 2.89462 2.89462 2.51217 3.36502 2.27248C3.8998 2 4.59987 2 6 2C7.40013 2 8.1002 2 8.63498 2.27248C9.10538 2.51217 9.48783 2.89462 9.72752 3.36502C10 3.8998 10 4.59987 10 6C10 7.40013 10 8.1002 9.72752 8.63498C9.48783 9.10538 9.10538 9.48783 8.63498 9.72752C8.1002 10 7.40013 10 6 10C4.59987 10 3.8998 10 3.36502 9.72752C2.89462 9.48783 2.51217 9.10538 2.27248 8.63498C2 8.1002 2 7.40013 2 6Z"
-                      stroke="#E5E7EB"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M2 18C2 16.5999 2 15.8998 2.27248 15.365C2.51217 14.8946 2.89462 14.5122 3.36502 14.2725C3.8998 14 4.59987 14 6 14C7.40013 14 8.1002 14 8.63498 14.2725C9.10538 14.5122 9.48783 14.8946 9.72752 15.365C10 15.8998 10 16.5999 10 18C10 19.4001 10 20.1002 9.72752 20.635C9.48783 21.1054 9.10538 21.4878 8.63498 21.7275C8.1002 22 7.40013 22 6 22C4.59987 22 3.8998 22 3.36502 21.7275C2.89462 21.4878 2.51217 21.1054 2.27248 20.635C2 20.1002 2 19.4001 2 18Z"
-                      stroke="#FFFFFF"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M14 18C14 16.5999 14 15.8998 14.2725 15.365C14.5122 14.8946 14.8946 14.5122 15.365 14.2725C15.8998 14 16.5999 14 18 14C19.4001 14 20.1002 14 20.635 14.2725C21.1054 14.5122 21.4878 14.8946 21.7275 15.365C22 15.8998 22 16.5999 22 18C22 19.4001 22 20.1002 21.7275 20.635C21.4878 21.1054 21.1054 21.4878 20.635 21.7275C20.1002 22 19.4001 22 18 22C16.5999 22 15.8998 22 15.365 21.7275C14.8946 21.4878 14.5122 21.1054 14.2725 20.635C14 20.1002 14 19.4001 14 18Z"
-                      stroke="#E5E7EB"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            {/* nav links */}
             <section className="mt-10 flex flex-col gap-6">
-              {/* New Chat - visible in both states */}
-              <div className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300  hover:scale-105 ${collapsed ? "ms-8" : "hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)]"}`}>
-                <FontAwesomeIcon
-                  className="text-white text-2xl"
-                  icon={faPenToSquare}
-                />
+              {/* New Chat */}
+              <div
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300 hover:scale-105",
+                  collapsed ? "ms-8" : "hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)]"
+                )}
+              >
+                <FontAwesomeIcon className="text-white text-2xl" icon={faPenToSquare} />
                 <h1
-                  className={`font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white
-                    transition-all duration-300 ease-in-out
-                    ${collapsed
-                      ? "opacity-0 w-0 overflow-hidden "
-                      : "opacity-100 w-auto "
-                    }`}
+                  className={cn(
+                    "font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white transition-all duration-300 ease-in-out",
+                    collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+                  )}
                 >
                   New Chat
                 </h1>
               </div>
 
-              {/* Select box with smooth dropdown */}
-              <div className={`${collapsed && !isMobile ? "w-[124px]" : "w-full md:w-[260px] md:ms-4"}`}>
+              {/* Bot Selector */}
+              <div className={cn(collapsed && !isMobile ? "w-[124px]" : "w-full md:w-[260px] md:ms-4", "overflow-x-hidden")}>
                 <div
                   className="w-full h-[38px] md:h-[42px] rounded-[8px] border-[#A78BFA] border-[1.3px] bg-[#0F0A1F] text-[#E5E7EB] px-4 md:px-[18px] py-2 md:py-[11px] font-poppins font-normal text-[12px] md:text-[13.33px] flex justify-between items-center cursor-pointer"
-                  onClick={() => setOpen(!open)}
+                  onClick={() => setOpen((v) => !v)}
                 >
-                  {selected}
+                  <span className="truncate max-w-[75%]">{selected}</span>
                   <div className="flex flex-col gap-[2px] pointer-events-none">
-                    <FontAwesomeIcon
-                      icon={open ? faChevronUp : faChevronDown}
-                      className="text-[#9CA3AF] text-sm"
-                    />
+                    <FontAwesomeIcon icon={open ? faChevronUp : faChevronDown} className="text-[#9CA3AF] text-sm" />
                   </div>
                 </div>
 
-                {/* Smooth dropdown animation */}
                 <div
-                  className={`overflow-hidden transition-all duration-500 ease-in-out ${open ? "max-h-40 opacity-100 mt-2" : "max-h-0 opacity-0"
-                    }`}
+                  className={cn(
+                    "overflow-hidden transition-all duration-500 ease-in-out",
+                    open ? "max-h-40 opacity-100 mt-2" : "max-h-0 opacity-0"
+                  )}
                 >
                   <div className="w-full bg-[#0F0A1F] rounded-[8px] shadow-inner">
                     {options.map((option) => (
@@ -289,284 +463,208 @@ export default function StudentChatbot() {
                 </div>
               </div>
 
-              {/* line */}
               {showLine && (
                 <div className="transition-all duration-500 ease-in-out">
-                  <div className="w-[124px] bg-[#FFFFFF4D] h-[0.7px]"></div>
+                  <div className="w-[124px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
               )}
 
-              {/* Content that appears/disappears with animation */}
+              {/* Collapsible content */}
               <div
-                className={`transition-all duration-500 ease-in-out ${contentVisible ? "opacity-100 max-h-screen" : "opacity-0 max-h-0 overflow-hidden"
-                  }`}
+                className={cn(
+                  "transition-all duration-500 ease-in-out",
+                  contentVisible ? "opacity-100 max-h-screen" : "opacity-0 max-h-0 overflow-hidden"
+                )}
               >
-                {/* line */}
                 <div className="flex justify-center transition-all duration-300 ease-in-out">
-                  <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]"></div>
+                  <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
 
-                {/* history section */}
+                {/* History */}
                 <section className="mt-6">
                   <div className="w-[143.2px] h-[40px] rounded-tr-lg rounded-br-lg bg-[#6D28D9] opacity-100 flex items-center justify-center">
                     <h1 className="font-Poppins font-normal text-[13.33px] leading-[100%] tracking-normal text-center align-middle text-white">
                       History
                     </h1>
                   </div>
-
                   <h2 className="font-Poppins mt-9 font-normal text-[13.33px] leading-[100%] tracking-normal align-middle text-white">
                     History Chats
                   </h2>
 
-                  {/* history lists */}
                   <section className="flex flex-col gap-4 mt-4">
-                    <div className="w-full h-[73.6px] rounded-[12px] bg-[#2D2A3B] opacity-100 border border-[#A855F733] p-3">
-                      <h1 className="font-Inter font-medium text-[13.6px] leading-[24px] tracking-normal text-white align-middle">
-                        Forces and Motion
-                      </h1>
-                      <div className="font-inter font-normal text-[11.9px] leading-[20px] text-gray-400 align-middle flex items-center gap-1 mt-1">
-                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                        <h1>2 hours ago</h1>
+                    {["Forces and Motion", "Energy Conversion", "Electrical Circuits", "Wave Properties"].map((t, i) => (
+                      <div key={i} className="w-full h-[73.6px] rounded-[12px] bg-[#2D2A3B] opacity-100 border border-[#A855F733] p-3">
+                        <h1 className="font-Inter font-medium text-[13.6px] leading-[24px] tracking-normal text-white align-middle">
+                          {t}
+                        </h1>
+                        <div className="font-inter font-normal text-[11.9px] leading-[20px] text-gray-400 align-middle flex items-center gap-1 mt-1">
+                          <FontAwesomeIcon icon={faClock} />
+                          <h1>{["2 hours ago", "Yesterday", "3 days ago", "Last week"][i]}</h1>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="w-full h-[73.6px] rounded-[12px] bg-[#2D2A3B] opacity-100 border border-[#A855F733] p-3">
-                      <h1 className="font-Inter font-medium text-[13.6px] leading-[24px] tracking-normal text-white align-middle">
-                        Energy Conversion
-                      </h1>
-                      <div className="font-inter font-normal text-[11.9px] leading-[20px] text-gray-400 align-middle flex items-center gap-1 mt-1">
-                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                        <h1>Yesterday</h1>
-                      </div>
-                    </div>
-
-                    <div className="w-full h-[73.6px] rounded-[12px] bg-[#2D2A3B] opacity-100 border border-[#A855F733] p-3">
-                      <h1 className="font-Inter font-medium text-[13.6px] leading-[24px] tracking-normal text-white align-middle">
-                        Electrical Circuits
-                      </h1>
-                      <div className="font-inter font-normal text-[11.9px] leading-[20px] text-gray-400 align-middle flex items-center gap-1 mt-1">
-                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                        <h1>3 days ago</h1>
-                      </div>
-                    </div>
-
-                    <div className="w-full h-[73.6px] rounded-[12px] bg-[#2D2A3B] opacity-100 border border-[#A855F733] p-3">
-                      <h1 className="font-Inter font-medium text-[13.6px] leading-[24px] tracking-normal text-white align-middle">
-                        Wave Properties
-                      </h1>
-                      <div className="font-inter font-normal text-[11.9px] leading-[20px] text-gray-400 align-middle flex items-center gap-1 mt-1">
-                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                        <h1>Last week</h1>
-                      </div>
-                    </div>
+                    ))}
                   </section>
                 </section>
 
-                {/* line */}
                 <div className="flex justify-center transition-all duration-300 ease-in-out mt-6">
-                  <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]"></div>
+                  <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
               </div>
             </section>
           </div>
 
-
-          <section>
-
-            {/* Wrap your profile nav links */}
-            <section
-              className={`transition-all duration-500 ease-in-out profile-nav
-    ${showProfileNav ? "opacity-100 translate-y-0 max-h-[300px]" : "opacity-0 -translate-y-10 max-h-0 pointer-events-none"}
-    ${!isMobile
-                  ? `absolute left-full translate-x-2 ${collapsed ? 'top-105' : 'top-175'}`
-                  : "relative mb-4 overflow-y-auto overflow-x-hidden"}`
-              }
-              style={{ width: isMobile ? "100%" : "300px" }}
-            >
-              <div className="pt-3 pr-5 pb-3 pl-5 gap-8 rounded-[14px] bg-gradient-to-b from-[#0F0A1F]/90 to-[#1E1B29]/90 shadow-2xl w-full">
-                {/* email */}
-                <h1 className="font-poppins font-semibold text-[17.25px] leading-[25.88px] tracking-[0.01em] text-[#9CA3AF] text-center">
-                  MohamedBB@@gmail.com
-                </h1>
-
-                {/* nav links */}
-                <section className="mt-2 flex flex-col gap-4 p-3 w-full">
-                  {/* Profile */}
-                  <Link to={'/student-page'}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300 w-full
-          ${studentProfile ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-105'
-                        : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
-                    onClick={() => isMobile && setMenuOpen(false)}
-                  >
-                    <FontAwesomeIcon className="text-white text-2xl" icon={faUser} />
-                    <h1 className="font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Profile</h1>
-                  </Link>
-
-                  {/* Chatbot */}
-                  <Link to={'/edubot'}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300 w-full
-          ${chatbot ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-105'
-                        : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
-                    onClick={() => isMobile && setMenuOpen(false)}
-                  >
-                    <img src="bot-1.png" className='w-[20px] h-[20px] lg:w-[30px] lg:h-[30px] object-cover' alt="EduBot Logo" />
-                    <h1 className="font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">My Chatbot</h1>
-                  </Link>
-
-                  {/* Study Area */}
-                  <div
-                    onClick={() => {
-                      navigate("/student-page", { state: { openTab: "studyArea" } });
-                      if (isMobile) setMenuOpen(false);
-                    }}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300 w-full
-          ${studyArea ? 'bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-105'
-                        : 'hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105'}`}
-                  >
-                    <FontAwesomeIcon className="text-white text-2xl" icon={faBookBookmark} />
-                    <h1 className="font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Study Area</h1>
-                  </div>
-
-                  {/* Logout */}
-                  <Link to={'/login'}
-                    className="flex items-center gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300 hover:scale-105 w-full"
-                    onClick={() => isMobile && setMenuOpen(false)}
-                  >
-                    <FontAwesomeIcon className="text-[#EF4444] text-3xl" icon={faRightFromBracket} />
-                    <h1 className="font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Logout</h1>
-                  </Link>
-                </section>
-              </div>
-            </section>
-
-
-
-
-            {/* profile */}
-            <div
-              className="mt-5 flex items-center gap-3 cursor-pointer"
-              onClick={() => setShowProfileNav(!showProfileNav)}
-            >
-              <img
-                src="bahaa.jpg"
-                className={`w-[60px] h-[60px] rounded-full opacity-100 object-cover transition-all duration-300 ${collapsed && !isMobile ? 'ms-6' : ''} `}
-                alt="profile image"
-              />
-              <div
-                className={`flex flex-col gap-2 transition-all duration-300 ease-in-out ${collapsed && !isMobile
-                  ? "opacity-0 w-0 overflow-hidden"
-                  : "opacity-100 w-auto"
-                  }`}
-              >
-                <h1 className="font-poppins font-medium text-[16px] text-white whitespace-nowrap">
-                  Mohamed Bahaa
-                </h1>
-                <h2 className="font-poppins font-medium text-[16px] text-[#9CA3AF] whitespace-nowrap">
-                  Subscribed
-                </h2>
-              </div>
-            </div>
-
-          </section>
-        </section >
-
-        {/* // Right content section - Chat interface */}
-        <section className={`flex-1 w-full min-h-screen bg-[linear-gradient(117.93deg,#0F0A1F_0.23%,#1E1B29_79.52%)] transition-all duration-300 relative ${menuOpen && isMobile ? 'opacity-50 pointer-events-none' : ''}`}>
-          {/* Overlay for mobile when sidebar is open */}
-          {isMobile && menuOpen && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-              onClick={() => setMenuOpen(false)}
+          {/* Profile trigger */}
+          <div className="mt-50 flex items-center gap-3 cursor-pointer" onClick={() => setShowProfileNav((v) => !v)}>
+            <img
+              src="bahaa.jpg"
+              className={cn(
+                "w-[60px] h-[60px] rounded-full opacity-100 object-cover transition-all duration-300",
+                collapsed && !isMobile ? "ms-6" : ""
+              )}
+              alt="profile image"
             />
+            <div
+              className={cn(
+                "flex flex-col gap-2 transition-all duration-300 ease-in-out",
+                collapsed && !isMobile ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+              )}
+            >
+              <h1 className="font-poppins font-medium text-[16px] text-white whitespace-nowrap">Mohamed Bahaa</h1>
+              <h2 className="font-poppins font-medium text-[16px] text-[#9CA3AF] whitespace-nowrap">Subscribed</h2>
+            </div>
+          </div>
+        </section>
+
+        {/* Profile dropdown container fixed to sidebar bottom area */}
+        <div
+          className="fixed bottom-0 left-0 p-5 z-40 transition-all duration-500 ease-in-out"
+          style={{
+            width: isMobile ? (menuOpen ? "280px" : "0") : `${sidebarWidth}px`,
+            pointerEvents: isMobile && !menuOpen ? "none" : "auto",
+          }}
+        >
+          <div className="relative w-full h-full">
+            <ProfileNav
+              ref={profileNavRef}
+              showProfileNav={showProfileNav}
+              isMobile={isMobile}
+              collapsed={collapsed}
+              studentProfile={studentProfile}
+              chatbot={chatbot}
+              studyArea={studyArea}
+              setMenuOpen={setMenuOpen}
+              navigate={navigate}
+            />
+          </div>
+        </div>
+
+        {/* Main area */}
+        <section
+          className={cn(
+            "flex-1 w-full h-screen min-h-0 bg-[linear-gradient(117.93deg,#0F0A1F_0.23%,#1E1B29_79.52%)] transition-all duration-300 relative",
+            menuOpen && isMobile ? "opacity-50 pointer-events-none" : ""
+          )}
+        >
+          {isMobile && menuOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setMenuOpen(false)} />
           )}
 
-          {/* Chat messages container */}
-          <div className="h-full pb-32 pt-20 lg:pt-6 px-4 md:px-8 overflow-y-auto">
-            {/* Welcome message when no messages exist */}
+          <div
+            ref={messagesContainerRef}
+            className={cn(
+              "h-full pb-32 pt-20 lg:pt-6 px-4 md:px-8 overflow-y-auto overflow-x-hidden overscroll-contain",
+              "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            )}
+          >
             {messages.length === 0 && (
-              <section className={`flex items-center justify-center flex-col gap-8 h-full ${collapsed && !isMobile ? 'mr-30' : 'mr-0'}`}>
+              <section
+                className={cn(
+                  "flex items-center justify-center flex-col gap-8 h-full",
+                  collapsed && !isMobile ? "mr-30" : "mr-0"
+                )}
+              >
                 <svg width="36" height="38" viewBox="0 0 36 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10.5 16.9141C10.5 16.9141 11.0793 22.3215 13.336 24.5781C15.5926 26.8347 21 27.4141 21 27.4141C21 27.4141 15.5926 27.9934 13.336 30.25C11.0793 32.5066 10.5 37.9141 10.5 37.9141C10.5 37.9141 9.92066 32.5066 7.66405 30.25C5.40743 27.9934 0 27.4141 0 27.4141C0 27.4141 5.40743 26.8347 7.66405 24.5781C9.92066 22.3215 10.5 16.9141 10.5 16.9141Z" fill="#E5E7EB" />
-                  <path d="M25.5 8C25.5 8 26.0793 13.4074 28.336 15.664C30.5926 17.9207 36 18.5 36 18.5C36 18.5 30.5926 19.0793 28.336 21.336C26.0793 23.5926 25.5 29 25.5 29C25.5 29 24.9207 23.5926 22.664 21.336C20.4074 19.0793 15 18.5 15 18.5C15 18.5 20.4074 17.9207 22.664 15.664C24.9207 13.4074 25.5 8 25.5 8Z" fill="#E5E7EB" />
-                  <path d="M10.5 0.0859375C10.5 0.0859375 11.0793 5.49337 13.336 7.74999C15.5926 10.0066 21 10.5859 21 10.5859C21 10.5859 15.5926 11.1653 13.336 13.4219C11.0793 15.6785 10.5 21.0859 10.5 21.0859C10.5 21.0859 9.92066 15.6785 7.66405 13.4219C5.40743 11.1653 0 10.5859 0 10.5859C0 10.5859 5.40743 10.0066 7.66405 7.74999C9.92066 5.49337 10.5 0.0859375 10.5 0.0859375Z" fill="#E5E7EB" />
+                  <path
+                    d="M10.5 16.9141C10.5 16.9141 11.0793 22.3215 13.336 24.5781C15.5926 26.8347 21 27.4141 21 27.4141C21 27.4141 15.5926 27.9934 13.336 30.25C11.0793 32.5066 10.5 37.9141 10.5 37.9141C10.5 37.9141 9.92066 32.5066 7.66405 30.25C5.40743 27.9934 0 27.4141 0 27.4141C0 27.4141 5.40743 26.8347 7.66405 24.5781C9.92066 22.3215 10.5 16.9141 10.5 16.9141Z"
+                    fill="#E5E7EB"
+                  />
+                  <path
+                    d="M25.5 8C25.5 8 26.0793 13.4074 28.336 15.664C30.5926 17.9207 36 18.5 36 18.5C36 18.5 30.5926 19.0793 28.336 21.336C26.0793 23.5926 25.5 29 25.5 29C25.5 29 24.9207 23.5926 22.664 21.336C20.4074 19.0793 15 18.5 15 18.5C15 18.5 20.4074 17.9207 22.664 15.664C24.9207 13.4074 25.5 8 25.5 8Z"
+                    fill="#E5E7EB"
+                  />
+                  <path
+                    d="M10.5 0.0859375C10.5 0.0859375 11.0793 5.49337 13.336 7.74999C15.5926 10.0066 21 10.5859 21 10.5859C21 10.5859 15.5926 11.1653 13.336 13.4219C11.0793 15.6785 10.5 21.0859 10.5 21.0859C10.5 21.0859 9.92066 15.6785 7.66405 13.4219C5.40743 11.1653 0 10.5859 0 10.5859C0 10.5859 5.40743 10.0066 7.66405 7.74999C9.92066 5.49337 10.5 0.0859375 10.5 0.0859375Z"
+                    fill="#E5E7EB"
+                  />
                 </svg>
-                <h1 className="font-poppins font-semibold text-[24px] md:text-[33.18px] leading-[100%] tracking-[0%] text-[#E5E7EB] text-center px-4">Ask our AI anything</h1>
+                <h1 className="font-poppins font-semibold text-[24px] md:text-[33.18px] leading-[100%] tracking-[0%] text-[#E5E7EB] text-center px-4">
+                  Ask our AI anything
+                </h1>
               </section>
             )}
 
-            {/* Messages display */}
             {messages.length > 0 && (
-              <div className={`space-y-6 ${collapsed && !isMobile ? 'ml-32' : 'ml-0'} transition-all duration-300`}>
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${message.sender === 'bot' ? 'justify-start' : 'justify-end'}`}
-                  >
-                    <div
-                      className={`max-w-[85%] md:max-w-[70%] p-4 rounded-2xl ${message.sender === 'bot'
-                        ? 'bg-[#2D2A3B] text-[#F3F4F6]'
-                        : 'bg-[#9333EA6B] text-[#F3F4F6]'
-                        }`}
-                    >
-                      <p className="font-poppins font-normal text-[13.33px] leading-[160%]">
-                        {message.text}
-                      </p>
-                      {message.sender === 'bot' && message.explanation && (
-                        <div className="mt-2 pt-2 border-t border-[#FFFFFF33]">
-                          <p className="text-[12px] text-[#CCCCCC]">{message.explanation}</p>
-                        </div>
-                      )}
+              <div
+                className={cn(
+                  "space-y-6 transition-all duration-300",
+                  collapsed && !isMobile ? "ml-32" : "ml-0"
+                )}
+              >
+                {messages.map((message, index) => {
+                  const isBot = message.sender === "bot";
+                  return (
+                    <div key={index} className={cn("flex", isBot ? "justify-start" : "justify-end")}>
+                      <MessageBubble message={message} isBot={isBot} />
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
-                {/* Typing indicator when bot is responding */}
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="max-w-[85%] md:max-w-[70%] p-4 rounded-2xl bg-[#2D2A3B]">
-                      <div className="flex space-x-2">
-                        <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce"></div>
-                        <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                      </div>
-                    </div>
+                    <BotTyping />
                   </div>
                 )}
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Input section */}
+          {/* Composer */}
           <section
-            className={`fixed bottom-6 transform transition-all duration-300
-    ${collapsed && !isMobile ? 'w-[727px] md:left-125' : 'w-[90%] md:w-[727px] md:left-140'}
-    ${isMobile ? 'left-1/2 -translate-x-1/2' : 'left-63 md:-right-30'}
-  `}
+            className={cn(
+              "fixed bottom-6 transform -translate-x-1/2 transition-all duration-300 z-10",
+              collapsed && !isMobile
+                ? "w-[calc(100vw-200px)] max-w-[800px]  md:left-190"
+                : isMobile
+                  ? "w-[90%] max-w-[400px] left-63"
+                  : "w-[calc(100vw-370px)] max-w-[800px]  md:left-230"
+            )}
           >
             <div className="relative">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                 className="w-full h-[54px] rounded-[100px] px-6 py-1.5 bg-[#2D2A3B] opacity-100 font-inter font-normal text-[16px] leading-[24px] tracking-[0%] text-[#CCCCCC] pr-14 focus:outline-none focus:ring-2 focus:ring-[#9333EA]"
                 placeholder="Type your question..."
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim()}
-                className={`absolute right-2 top-1/2 transform -translate-y-1/2 w-[42px] h-[42px] rounded-full p-2 flex items-center justify-center gap-2 ${inputMessage.trim()
-                  ? 'bg-gradient-to-b from-[#9333EA] to-[#6B21A8] text-white cursor-pointer'
-                  : 'bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] text-[#6B7280] cursor-not-allowed'
-                  } transition-all duration-200`}
+                className={cn(
+                  "absolute right-2 top-1/2 transform -translate-y-1/2 w-[42px] h-[42px] rounded-full p-2 flex items-center justify-center gap-2 transition-all duration-200",
+                  inputMessage.trim()
+                    ? "bg-gradient-to-b from-[#9333EA] to-[#6B21A8] text-white cursor-pointer"
+                    : "bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] text-[#6B7280] cursor-not-allowed"
+                )}
               >
                 <FontAwesomeIcon icon={faPaperPlane} />
               </button>
             </div>
           </section>
-
         </section>
       </section>
     </section>
-  )
+  );
 }
