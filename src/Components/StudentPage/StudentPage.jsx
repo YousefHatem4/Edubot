@@ -26,7 +26,7 @@ export default function StudentPage() {
                         <div className="w-[36px] h-[36px] rounded-[10px] bg-gradient-to-br from-[#A259FF] to-[#6B21FF] flex justify-center items-center">
                             <FontAwesomeIcon className="text-white text-[16px]" icon={faGraduationCap} />
                         </div>
-                        <h1 className="font-inter font-extrabold text-[18px] text-white">EduBot Pro</h1>
+                        <h1 className="font-inter font-extrabold text-[18px] text-white">EduBot </h1>
                     </div>
                     <button
                         onClick={() => setMenuOpen(!menuOpen)}
