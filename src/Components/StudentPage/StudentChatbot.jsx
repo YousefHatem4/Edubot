@@ -14,12 +14,18 @@ import {
 import { faClock, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 
+
+
 /* tiny helper to compose tailwind classes clearly while keeping styles unchanged */
 function cn(...parts) {
   return parts.filter(Boolean).join(" ");
 }
 
+
+
 /* ---------- Subcomponents ---------- */
+
+
 
 const HeaderMobile = ({ menuOpen, setMenuOpen }) => (
   <div className="lg:hidden fixed top-0 left-0 w-full bg-gradient-to-r from-[#0F0A1F] to-[#1E1B29] z-40 flex justify-between items-center px-4 py-3 shadow-md">
@@ -37,6 +43,8 @@ const HeaderMobile = ({ menuOpen, setMenuOpen }) => (
     </button>
   </div>
 );
+
+
 
 const SidebarHeader = ({ collapsed, setCollapsed }) => (
   <div className="hidden lg:block">
@@ -92,7 +100,9 @@ const SidebarHeader = ({ collapsed, setCollapsed }) => (
   </div>
 );
 
-/* ProfileNav with forwardRef preserved to keep outside-click logic identical */
+
+
+/* ProfileNav with fixed positioning to appear outside the sidebar */
 const ProfileNav = forwardRef(
   (
     {
@@ -106,131 +116,132 @@ const ProfileNav = forwardRef(
       navigate,
     },
     ref
-  ) => (
-    <section
-      ref={ref}
-      className={cn(
-        "transition-all duration-300 ease-out profile-nav overflow-x-hidden",
-        !isMobile
-          ? cn(
-            "absolute bottom-full left-0 mb-2 z-50",
-            collapsed ? "w-[220px]" : "w-[300px]",
-            showProfileNav
-              ? "opacity-100 translate-y-0 pointer-events-auto"
-              : "opacity-0 translate-y-2 pointer-events-none"
-          )
-          : cn(
-            "relative w-full z-50",
-            showProfileNav ? "opacity-100" : "opacity-0 pointer-events-none"
-          )
-      )}
-    >
+  ) => {
+    return (
       <div
+        ref={ref}
         className={cn(
-          isMobile ? "max-h-64 overflow-y-auto" : "",
-          "pt-3 pr-4 pb-3 pl-4 gap-6 rounded-[14px] bg-gradient-to-b from-[#0F0A1F]/90 to-[#1E1B29]/90 shadow-2xl w-full",
-          "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          "transition-all duration-300 ease-out overflow-hidden",
+          isMobile
+            ? cn(
+              "w-full",
+              showProfileNav
+                ? "max-h-[400px] opacity-100 mb-4"
+                : "max-h-0 opacity-0"
+            )
+            : cn(
+              "fixed z-50",
+              collapsed ? "w-[220px] bottom-24" : "w-[300px] bottom-24",
+              collapsed ? "left-[153px]" : "left-[324px]",
+              showProfileNav
+                ? "opacity-100 translate-y-0 pointer-events-auto"
+                : "opacity-0 translate-y-2 pointer-events-none"
+            )
         )}
       >
-        <h1
-          className={cn(
+        <div className="pt-3 pr-4 pb-3 pl-4 gap-6 rounded-[14px] bg-gradient-to-b from-[#0F0A1F]/90 to-[#1E1B29]/90 shadow-2xl w-full border border-white/10">
+          <h1 className={cn(
             "font-poppins font-semibold text-[15px] leading-[24px] tracking-[0.01em] text-[#9CA3AF] text-center",
             collapsed && !isMobile ? "truncate" : ""
-          )}
-        >
-          MohamedBB@@gmail.com
-        </h1>
+          )}>
+            MohamedBB@@gmail.com
+          </h1>
 
-        <section
-          className={cn(
+
+          <section className={cn(
             "mt-2 flex flex-col gap-2 p-2 w-full",
             collapsed && !isMobile ? "items-center" : ""
-          )}
-        >
-          <Link
-            to={"/student-page"}
-            className={cn(
-              "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
-              collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
-              studentProfile
-                ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
-                : "hover:bg-white/10"
-            )}
-            onClick={() => isMobile && setMenuOpen(false)}
-          >
-            <FontAwesomeIcon className="text-white text-xl" icon={faUser} />
-            {!collapsed || isMobile ? (
-              <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
-                Profile
-              </h1>
-            ) : null}
-          </Link>
+          )}>
+            <Link
+              to={"/student-page"}
+              className={cn(
+                "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
+                collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
+                studentProfile
+                  ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
+                  : "hover:bg-white/10"
+              )}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              <FontAwesomeIcon className="text-white text-xl" icon={faUser} />
+              {!collapsed || isMobile ? (
+                <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
+                  Profile
+                </h1>
+              ) : null}
+            </Link>
 
-          <Link
-            to={"/edubot"}
-            className={cn(
-              "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
-              collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
-              chatbot
-                ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
-                : "hover:bg-white/10"
-            )}
-            onClick={() => isMobile && setMenuOpen(false)}
-          >
-            <img
-              src="bot-1.png"
-              className="w-[20px] h-[20px] lg:w-[24px] lg:h-[24px] object-cover"
-              alt="EduBot Logo"
-            />
-            {!collapsed || isMobile ? (
-              <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
-                My Chatbot
-              </h1>
-            ) : null}
-          </Link>
 
-          <div
-            onClick={() => {
-              navigate("/student-page", { state: { openTab: "studyArea" } });
-              if (isMobile) setMenuOpen(false);
-            }}
-            className={cn(
-              "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
-              collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
-              studyArea
-                ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
-                : "hover:bg-white/10"
-            )}
-          >
-            <FontAwesomeIcon className="text-white text-xl" icon={faBookBookmark} />
-            {!collapsed || isMobile ? (
-              <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
-                Study Area
-              </h1>
-            ) : null}
-          </div>
+            <Link
+              to={"/edubot"}
+              className={cn(
+                "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
+                collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
+                chatbot
+                  ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
+                  : "hover:bg-white/10"
+              )}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              <img
+                src="bot-1.png"
+                className="w-[20px] h-[20px] lg:w-[24px] lg:h-[24px] object-cover"
+                alt="EduBot Logo"
+              />
+              {!collapsed || isMobile ? (
+                <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
+                  My Chatbot
+                </h1>
+              ) : null}
+            </Link>
 
-          <Link
-            to={"/login"}
-            className={cn(
-              "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
-              collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
-              "hover:bg-white/10"
-            )}
-            onClick={() => isMobile && setMenuOpen(false)}
-          >
-            <FontAwesomeIcon className="text-[#EF4444] text-2xl" icon={faRightFromBracket} />
-            {!collapsed || isMobile ? (
-              <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
-                Logout
-              </h1>
-            ) : null}
-          </Link>
-        </section>
+
+            <div
+              onClick={() => {
+                navigate("/student-page", { state: { openTab: "studyArea" } });
+                if (isMobile) setMenuOpen(false);
+              }}
+              className={cn(
+                "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
+                collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
+                studyArea
+                  ? "bg-[linear-gradient(91.27deg,#8B5CF6_0.46%,#EC4899_99.62%)] shadow-lg scale-[1.02]"
+                  : "hover:bg-white/10"
+              )}
+            >
+              <FontAwesomeIcon className="text-white text-xl" icon={faBookBookmark} />
+              {!collapsed || isMobile ? (
+                <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
+                  Study Area
+                </h1>
+              ) : null}
+            </div>
+
+
+            <Link
+              to={"/login"}
+              className={cn(
+                "flex items-center gap-3 rounded-[8px] cursor-pointer transition-all duration-200 w-full",
+                collapsed && !isMobile ? "justify-center px-3 py-2" : "px-4 py-3",
+                "hover:bg-white/10"
+              )}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              <FontAwesomeIcon className="text-[#EF4444] text-2xl" icon={faRightFromBracket} />
+              {!collapsed || isMobile ? (
+                <h1 className="font-semibold text-[16px] leading-[24px] tracking-[1%] text-white">
+                  Logout
+                </h1>
+              ) : null}
+            </Link>
+          </section>
+        </div>
       </div>
-    </section>
-  )
+    );
+  }
 );
+
+
 
 const MessageBubble = ({ message, isBot }) => (
   <div className={cn("max-w-[85%] md:max-w-[70%] p-4 rounded-2xl", isBot ? "bg-[#2D2A3B] text-[#F3F4F6]" : "bg-[#9333EA6B] text-[#F3F4F6]")}>
@@ -243,6 +254,8 @@ const MessageBubble = ({ message, isBot }) => (
   </div>
 );
 
+
+
 const BotTyping = () => (
   <div className="max-w-[85%] md:max-w-[70%] p-4 rounded-2xl bg-[#2D2A3B]">
     <div className="flex space-x-2">
@@ -253,7 +266,11 @@ const BotTyping = () => (
   </div>
 );
 
+
+
 /* ---------- Main Component ---------- */
+
+
 
 export default function StudentChatbot() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -275,17 +292,27 @@ export default function StudentChatbot() {
   const options = ["chemistry Bot", "biology Bot", "English Bot"];
   const [showLine, setShowLine] = useState(collapsed);
 
+
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const profileNavRef = useRef(null);
+  const profileTriggerRef = useRef(null);
+
 
   // Close profile nav on outside click
   useEffect(() => {
     function handleClickOutside(e) {
-      if (profileNavRef.current && !profileNavRef.current.contains(e.target)) {
+      if (
+        profileNavRef.current &&
+        !profileNavRef.current.contains(e.target) &&
+        profileTriggerRef.current &&
+        !profileTriggerRef.current.contains(e.target)
+      ) {
         setShowProfileNav(false);
       }
     }
+
+
     if (showProfileNav) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
@@ -294,13 +321,16 @@ export default function StudentChatbot() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showProfileNav]);
 
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
 
   // lock page scroll like original
   useEffect(() => {
@@ -316,18 +346,22 @@ export default function StudentChatbot() {
     };
   }, []);
 
+
   // responsive behavior identical to original
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
       setIsMobile(width < 1024);
       setIsTablet(width < 1280 && width >= 768);
-      if (width >= 1024) setMenuOpen(false);
+      if (width >= 1024) {
+        setMenuOpen(false);
+      }
       if (width >= 768) setCollapsed(false);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -360,6 +394,7 @@ export default function StudentChatbot() {
     }, 1500);
   };
 
+
   // collapse transitions identical
   useEffect(() => {
     if (collapsed) {
@@ -379,21 +414,18 @@ export default function StudentChatbot() {
     }
   }, [collapsed, isMobile]);
 
-  // mobile sidebar outside click
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isMobile && menuOpen && !event.target.closest(".sidebar")) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isMobile, menuOpen]);
+
+  // Handle profile click
+  const handleProfileClick = () => {
+    setShowProfileNav(prev => !prev);
+  };
+
 
   return (
     <section className="flex flex-col h-screen overflow-hidden overflow-x-hidden overscroll-contain">
       <section className="flex flex-1 min-h-0">
         <HeaderMobile menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+
 
         {/* Sidebar */}
         <section
@@ -405,8 +437,9 @@ export default function StudentChatbot() {
           )}
           style={{ width: isMobile ? (menuOpen ? "280px" : "0") : `${sidebarWidth}px` }}
         >
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <SidebarHeader collapsed={collapsed} setCollapsed={setCollapsed} />
+
 
             <section className="mt-10 flex flex-col gap-6">
               {/* New Chat */}
@@ -427,6 +460,7 @@ export default function StudentChatbot() {
                 </h1>
               </div>
 
+
               {/* Bot Selector */}
               <div className={cn(collapsed && !isMobile ? "w-[124px]" : "w-full md:w-[260px] md:ms-4", "overflow-x-hidden")}>
                 <div
@@ -438,6 +472,7 @@ export default function StudentChatbot() {
                     <FontAwesomeIcon icon={open ? faChevronUp : faChevronDown} className="text-[#9CA3AF] text-sm" />
                   </div>
                 </div>
+
 
                 <div
                   className={cn(
@@ -463,11 +498,13 @@ export default function StudentChatbot() {
                 </div>
               </div>
 
+
               {showLine && (
                 <div className="transition-all duration-500 ease-in-out">
                   <div className="w-[124px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
               )}
+
 
               {/* Collapsible content */}
               <div
@@ -480,6 +517,7 @@ export default function StudentChatbot() {
                   <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
 
+
                 {/* History */}
                 <section className="mt-6">
                   <div className="w-[143.2px] h-[40px] rounded-tr-lg rounded-br-lg bg-[#6D28D9] opacity-100 flex items-center justify-center">
@@ -490,6 +528,7 @@ export default function StudentChatbot() {
                   <h2 className="font-Poppins mt-9 font-normal text-[13.33px] leading-[100%] tracking-normal align-middle text-white">
                     History Chats
                   </h2>
+
 
                   <section className="flex flex-col gap-4 mt-4">
                     {["Forces and Motion", "Energy Conversion", "Electrical Circuits", "Wave Properties"].map((t, i) => (
@@ -506,6 +545,7 @@ export default function StudentChatbot() {
                   </section>
                 </section>
 
+
                 <div className="flex justify-center transition-all duration-300 ease-in-out mt-6">
                   <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
@@ -513,50 +553,68 @@ export default function StudentChatbot() {
             </section>
           </div>
 
-          {/* Profile trigger */}
-          <div className="mt-50 flex items-center gap-3 cursor-pointer" onClick={() => setShowProfileNav((v) => !v)}>
-            <img
-              src="bahaa.jpg"
-              className={cn(
-                "w-[60px] h-[60px] rounded-full opacity-100 object-cover transition-all duration-300",
-                collapsed && !isMobile ? "ms-6" : ""
-              )}
-              alt="profile image"
-            />
+
+          {/* Profile Section - positioned at bottom */}
+          <div className="relative mt-50">
+            {/* Profile Navigation - Fixed positioned outside sidebar for desktop, above profile for mobile */}
+            {isMobile ? (
+              <ProfileNav
+                ref={profileNavRef}
+                showProfileNav={showProfileNav}
+                isMobile={isMobile}
+                collapsed={collapsed}
+                studentProfile={studentProfile}
+                chatbot={chatbot}
+                studyArea={studyArea}
+                setMenuOpen={setMenuOpen}
+                navigate={navigate}
+              />
+            ) : null}
+
+
+            {/* Profile trigger */}
             <div
-              className={cn(
-                "flex flex-col gap-2 transition-all duration-300 ease-in-out",
-                collapsed && !isMobile ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
-              )}
+              ref={profileTriggerRef}
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={handleProfileClick}
             >
-              <h1 className="font-poppins font-medium text-[16px] text-white whitespace-nowrap">Mohamed Bahaa</h1>
-              <h2 className="font-poppins font-medium text-[16px] text-[#9CA3AF] whitespace-nowrap">Subscribed</h2>
+              <img
+                src="bahaa.jpg"
+                className={cn(
+                  "w-[60px] h-[60px] rounded-full opacity-100 object-cover transition-all duration-300",
+                  collapsed && !isMobile ? "ms-6" : ""
+                )}
+                alt="profile image"
+              />
+              <div
+                className={cn(
+                  "flex flex-col gap-2 transition-all duration-300 ease-in-out",
+                  collapsed && !isMobile ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+                )}
+              >
+                <h1 className="font-poppins font-medium text-[16px] text-white whitespace-nowrap">Mohamed Bahaa</h1>
+                <h2 className="font-poppins font-medium text-[16px] text-[#9CA3AF] whitespace-nowrap">Subscribed</h2>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Profile dropdown container fixed to sidebar bottom area */}
-        <div
-          className="fixed bottom-0 left-0 p-5 z-40 transition-all duration-500 ease-in-out"
-          style={{
-            width: isMobile ? (menuOpen ? "280px" : "0") : `${sidebarWidth}px`,
-            pointerEvents: isMobile && !menuOpen ? "none" : "auto",
-          }}
-        >
-          <div className="relative w-full h-full">
-            <ProfileNav
-              ref={profileNavRef}
-              showProfileNav={showProfileNav}
-              isMobile={isMobile}
-              collapsed={collapsed}
-              studentProfile={studentProfile}
-              chatbot={chatbot}
-              studyArea={studyArea}
-              setMenuOpen={setMenuOpen}
-              navigate={navigate}
-            />
-          </div>
-        </div>
+
+        {/* Profile Navigation - Fixed positioned outside sidebar for desktop only */}
+        {!isMobile && (
+          <ProfileNav
+            ref={profileNavRef}
+            showProfileNav={showProfileNav}
+            isMobile={isMobile}
+            collapsed={collapsed}
+            studentProfile={studentProfile}
+            chatbot={chatbot}
+            studyArea={studyArea}
+            setMenuOpen={setMenuOpen}
+            navigate={navigate}
+          />
+        )}
+
 
         {/* Main area */}
         <section
@@ -568,6 +626,7 @@ export default function StudentChatbot() {
           {isMobile && menuOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setMenuOpen(false)} />
           )}
+
 
           <div
             ref={messagesContainerRef}
@@ -603,6 +662,7 @@ export default function StudentChatbot() {
               </section>
             )}
 
+
             {messages.length > 0 && (
               <div
                 className={cn(
@@ -619,6 +679,7 @@ export default function StudentChatbot() {
                   );
                 })}
 
+
                 {isTyping && (
                   <div className="flex justify-start">
                     <BotTyping />
@@ -629,15 +690,16 @@ export default function StudentChatbot() {
             <div ref={messagesEndRef} />
           </div>
 
+
           {/* Composer */}
           <section
             className={cn(
               "fixed bottom-6 transform -translate-x-1/2 transition-all duration-300 z-10",
               collapsed && !isMobile
-                ? "w-[calc(100vw-200px)] max-w-[800px]  md:left-190"
+                ? "w-[calc(100vw-200px)] max-w-[800px] md:left-190"
                 : isMobile
                   ? "w-[90%] max-w-[400px] left-63"
-                  : "w-[calc(100vw-370px)] max-w-[800px]  md:left-230"
+                  : "w-[calc(100vw-370px)] max-w-[800px] md:left-230"
             )}
           >
             <div className="relative">
