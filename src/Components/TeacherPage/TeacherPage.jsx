@@ -28,9 +28,9 @@ export default function TeacherPage() {
           <div className="lg:hidden fixed top-0 left-0 w-full bg-[#0A0710] z-30 flex justify-between items-center px-4 py-3 shadow-md">
             <div className="flex items-center gap-3">
               <div className="w-[36px] h-[36px] rounded-[10px] bg-gradient-to-br from-[#A259FF] to-[#6B21FF] flex justify-center items-center">
-                <FontAwesomeIcon className="text-white text-[16px]" icon={faGraduationCap} />
+                <img src="bot-1.png" className='w-[20px] h-[20px] lg:w-[30px] lg:h-[30px] object-cover' alt="EduBot Logo" />
               </div>
-              <h1 className="font-inter font-extrabold text-[18px] text-white">EduBot Pro</h1>
+              <h1 className="font-inter font-extrabold text-[18px] text-white">EduBot </h1>
             </div>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
