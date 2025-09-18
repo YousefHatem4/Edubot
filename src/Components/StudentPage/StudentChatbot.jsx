@@ -14,18 +14,12 @@ import {
 import { faClock, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 
-
-
 /* tiny helper to compose tailwind classes clearly while keeping styles unchanged */
 function cn(...parts) {
   return parts.filter(Boolean).join(" ");
 }
 
-
-
 /* ---------- Subcomponents ---------- */
-
-
 
 const HeaderMobile = ({ menuOpen, setMenuOpen }) => (
   <div className="lg:hidden fixed top-0 left-0 w-full bg-gradient-to-r from-[#0F0A1F] to-[#1E1B29] z-40 flex justify-between items-center px-4 py-3 shadow-md">
@@ -43,8 +37,6 @@ const HeaderMobile = ({ menuOpen, setMenuOpen }) => (
     </button>
   </div>
 );
-
-
 
 const SidebarHeader = ({ collapsed, setCollapsed }) => (
   <div className="hidden lg:block">
@@ -100,8 +92,6 @@ const SidebarHeader = ({ collapsed, setCollapsed }) => (
   </div>
 );
 
-
-
 /* ProfileNav with fixed positioning to appear outside the sidebar */
 const ProfileNav = forwardRef(
   (
@@ -147,7 +137,6 @@ const ProfileNav = forwardRef(
             MohamedBB@@gmail.com
           </h1>
 
-
           <section className={cn(
             "mt-2 flex flex-col gap-2 p-2 w-full",
             collapsed && !isMobile ? "items-center" : ""
@@ -170,7 +159,6 @@ const ProfileNav = forwardRef(
                 </h1>
               ) : null}
             </Link>
-
 
             <Link
               to={"/edubot"}
@@ -195,7 +183,6 @@ const ProfileNav = forwardRef(
               ) : null}
             </Link>
 
-
             <div
               onClick={() => {
                 navigate("/student-page", { state: { openTab: "studyArea" } });
@@ -216,7 +203,6 @@ const ProfileNav = forwardRef(
                 </h1>
               ) : null}
             </div>
-
 
             <Link
               to={"/login"}
@@ -241,8 +227,6 @@ const ProfileNav = forwardRef(
   }
 );
 
-
-
 const MessageBubble = ({ message, isBot }) => (
   <div className={cn("max-w-[85%] md:max-w-[70%] p-4 rounded-2xl", isBot ? "bg-[#2D2A3B] text-[#F3F4F6]" : "bg-[#9333EA6B] text-[#F3F4F6]")}>
     <p className="font-poppins font-normal text-[13.33px] leading-[160%] break-words">{message.text}</p>
@@ -254,8 +238,6 @@ const MessageBubble = ({ message, isBot }) => (
   </div>
 );
 
-
-
 const BotTyping = () => (
   <div className="max-w-[85%] md:max-w-[70%] p-4 rounded-2xl bg-[#2D2A3B]">
     <div className="flex space-x-2">
@@ -266,17 +248,19 @@ const BotTyping = () => (
   </div>
 );
 
-
-
 /* ---------- Main Component ---------- */
-
-
 
 export default function StudentChatbot() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Math Bot");
-  const [collapsed, setCollapsed] = useState(false);
+
+  // KEY CHANGE: Initialize collapsed state based on screen size
+  const [collapsed, setCollapsed] = useState(() => {
+    // Only collapse on desktop/larger screens initially
+    return window.innerWidth >= 1024;
+  });
+
   const [sidebarWidth, setSidebarWidth] = useState(324);
   const [contentVisible, setContentVisible] = useState(true);
   const [studentProfile, setStudentProfile] = useState(false);
@@ -290,14 +274,12 @@ export default function StudentChatbot() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isTablet, setIsTablet] = useState(window.innerWidth < 1280 && window.innerWidth >= 768);
   const options = ["chemistry Bot", "biology Bot", "English Bot"];
-  const [showLine, setShowLine] = useState(collapsed);
-
+  const [showLine, setShowLine] = useState(() => window.innerWidth >= 1024);
 
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const profileNavRef = useRef(null);
   const profileTriggerRef = useRef(null);
-
 
   // Close profile nav on outside click
   useEffect(() => {
@@ -312,7 +294,6 @@ export default function StudentChatbot() {
       }
     }
 
-
     if (showProfileNav) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
@@ -321,16 +302,13 @@ export default function StudentChatbot() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showProfileNav]);
 
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
-
 
   // lock page scroll like original
   useEffect(() => {
@@ -346,22 +324,30 @@ export default function StudentChatbot() {
     };
   }, []);
 
-
-  // responsive behavior identical to original
+  // ENHANCED: responsive behavior with mobile-first approach
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      setIsMobile(width < 1024);
-      setIsTablet(width < 1280 && width >= 768);
+      const newIsMobile = width < 1024;
+      const newIsTablet = width < 1280 && width >= 768;
+
+      setIsMobile(newIsMobile);
+      setIsTablet(newIsTablet);
+
       if (width >= 1024) {
         setMenuOpen(false);
       }
-      if (width >= 768) setCollapsed(false);
+
+      // KEY CHANGE: Only force collapse state changes on desktop
+      // Mobile screens should always stay expanded (not collapsed)
+      if (newIsMobile) {
+        setCollapsed(false);
+      }
     };
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -394,7 +380,6 @@ export default function StudentChatbot() {
     }, 1500);
   };
 
-
   // collapse transitions identical
   useEffect(() => {
     if (collapsed) {
@@ -414,18 +399,15 @@ export default function StudentChatbot() {
     }
   }, [collapsed, isMobile]);
 
-
   // Handle profile click
   const handleProfileClick = () => {
     setShowProfileNav(prev => !prev);
   };
 
-
   return (
     <section className="flex flex-col h-screen overflow-hidden overflow-x-hidden overscroll-contain">
       <section className="flex flex-1 min-h-0">
         <HeaderMobile menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
 
         {/* Sidebar */}
         <section
@@ -439,7 +421,6 @@ export default function StudentChatbot() {
         >
           <div className="min-w-0 flex-1">
             <SidebarHeader collapsed={collapsed} setCollapsed={setCollapsed} />
-
 
             <section className="mt-10 flex flex-col gap-6">
               {/* New Chat */}
@@ -460,7 +441,6 @@ export default function StudentChatbot() {
                 </h1>
               </div>
 
-
               {/* Bot Selector */}
               <div className={cn(collapsed && !isMobile ? "w-[124px]" : "w-full md:w-[260px] md:ms-4", "overflow-x-hidden")}>
                 <div
@@ -472,7 +452,6 @@ export default function StudentChatbot() {
                     <FontAwesomeIcon icon={open ? faChevronUp : faChevronDown} className="text-[#9CA3AF] text-sm" />
                   </div>
                 </div>
-
 
                 <div
                   className={cn(
@@ -498,13 +477,11 @@ export default function StudentChatbot() {
                 </div>
               </div>
 
-
               {showLine && (
                 <div className="transition-all duration-500 ease-in-out">
                   <div className="w-[124px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
               )}
-
 
               {/* Collapsible content */}
               <div
@@ -517,7 +494,6 @@ export default function StudentChatbot() {
                   <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
 
-
                 {/* History */}
                 <section className="mt-6">
                   <div className="w-[143.2px] h-[40px] rounded-tr-lg rounded-br-lg bg-[#6D28D9] opacity-100 flex items-center justify-center">
@@ -528,7 +504,6 @@ export default function StudentChatbot() {
                   <h2 className="font-Poppins mt-9 font-normal text-[13.33px] leading-[100%] tracking-normal align-middle text-white">
                     History Chats
                   </h2>
-
 
                   <section className="flex flex-col gap-4 mt-4">
                     {["Forces and Motion", "Energy Conversion", "Electrical Circuits", "Wave Properties"].map((t, i) => (
@@ -545,14 +520,12 @@ export default function StudentChatbot() {
                   </section>
                 </section>
 
-
                 <div className="flex justify-center transition-all duration-300 ease-in-out mt-6">
                   <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
               </div>
             </section>
           </div>
-
 
           {/* Profile Section - positioned at bottom */}
           <div className="relative mt-50">
@@ -570,7 +543,6 @@ export default function StudentChatbot() {
                 navigate={navigate}
               />
             ) : null}
-
 
             {/* Profile trigger */}
             <div
@@ -599,7 +571,6 @@ export default function StudentChatbot() {
           </div>
         </section>
 
-
         {/* Profile Navigation - Fixed positioned outside sidebar for desktop only */}
         {!isMobile && (
           <ProfileNav
@@ -615,7 +586,6 @@ export default function StudentChatbot() {
           />
         )}
 
-
         {/* Main area */}
         <section
           className={cn(
@@ -626,7 +596,6 @@ export default function StudentChatbot() {
           {isMobile && menuOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setMenuOpen(false)} />
           )}
-
 
           <div
             ref={messagesContainerRef}
@@ -662,7 +631,6 @@ export default function StudentChatbot() {
               </section>
             )}
 
-
             {messages.length > 0 && (
               <div
                 className={cn(
@@ -679,7 +647,6 @@ export default function StudentChatbot() {
                   );
                 })}
 
-
                 {isTyping && (
                   <div className="flex justify-start">
                     <BotTyping />
@@ -690,15 +657,14 @@ export default function StudentChatbot() {
             <div ref={messagesEndRef} />
           </div>
 
-
           {/* Composer */}
           <section
             className={cn(
-              "fixed bottom-6 transform -translate-x-1/2 transition-all duration-300 z-10",
+              "fixed bottom-6 transform -translate-x-1/2  transition-all duration-300 z-10",
               collapsed && !isMobile
-                ? "w-[calc(100vw-200px)] max-w-[800px] md:left-190"
+                ? "w-[calc(100vw-200px)] max-w-[800px] md:left-195"
                 : isMobile
-                  ? "w-[90%] max-w-[400px] left-63"
+                  ? "w-[90%] max-w-[400px] left-49"
                   : "w-[calc(100vw-370px)] max-w-[800px] md:left-230"
             )}
           >
