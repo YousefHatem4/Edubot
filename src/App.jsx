@@ -25,15 +25,15 @@ const routers = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Home /> },
-      { path: "upload", element: <ProtectedRoute><Upload /></ProtectedRoute> },
-      { path: "edubot", element: <ProtectedRoute><StudentChatbot /></ProtectedRoute> },
+      { path: "upload", element: <><Upload /></> },
+      { path: "edubot", element: <><StudentChatbot /></> },
       { path: "register", element: <Register /> },
       { path: "login", element: <Login /> },
       { path: "forgetpass", element: <ForgetPass /> },
-      { path: "teacher-page", element: <ProtectedRoute><TeacherPage /></ProtectedRoute> },
-      { path: "student-page", element: <ProtectedRoute><StudentPage /></ProtectedRoute> },
-      { path: "botinfo", element: <ProtectedRoute><BotInfo /></ProtectedRoute> },
-      { path: "managebot", element: <ProtectedRoute><ManageBot /></ProtectedRoute> },
+      { path: "teacher-page", element: <><TeacherPage /></> },
+      { path: "student-page", element: <><StudentPage /></> },
+      { path: "botinfo", element: <><BotInfo /></> },
+      { path: "managebot", element: <><ManageBot /></> },
 
     ]
   }
