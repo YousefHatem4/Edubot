@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBook, faChartBar, faGear, faGraduationCap, faHome, faRobot, faUsers, faBars, faXmark, faPlusCircle, faUser, faRightFromBracket, faBookmark, faBookBookmark } from '@fortawesome/free-solid-svg-icons'
-import { Link, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import StudentProfile from './StudentProfile';
 import StudentStudyArea from './StudentStudyArea';
+import { userContext } from '../Context/userContext';
+import toast from 'react-hot-toast';
 
 
 
@@ -15,6 +17,34 @@ export default function StudentPage() {
     const [chatbot, setChatbot] = useState(false);
     const [studyArea, setStudyArea] = useState(openTab === "studyArea");
     const [menuOpen, setMenuOpen] = useState(false);
+    const { setUserToken } = useContext(userContext);
+    const navigate = useNavigate();
+
+
+
+    // Logout function
+    const handleLogout = () => {
+        try {
+            // Clear user token from localStorage
+            localStorage.removeItem('userToken');
+            // Clear user data from localStorage
+            localStorage.removeItem('userData');
+            // Clear any other auth-related data if exists
+            localStorage.removeItem('refreshToken');
+
+            // Update context state
+            setUserToken(null);
+
+            // Show success message
+            toast.success("Logged out successfully 👋");
+
+            // Redirect to login page
+            navigate('/login', { replace: true });
+        } catch (error) {
+            console.error('Logout error:', error);
+            toast.error("Error logging out. Please try again.");
+        }
+    };
     return <>
         {/* full page wrapper */}
         <section className="flex flex-col min-h-screen">
@@ -98,12 +128,13 @@ export default function StudentPage() {
 
 
                         {/* Logout */}
-                        <Link to={'/login'}
-                            className={`flex items-center md:mt-10 gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300  hover:scale-105
-                `}>
+                        <div
+                            onClick={handleLogout}
+                            className={`flex items-center md:mt-10 gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300 hover:bg-red-500/10 hover:scale-105`}
+                        >
                             <FontAwesomeIcon className="text-[#EF4444] text-3xl" icon={faRightFromBracket} />
                             <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Logout</h1>
-                        </Link>
+                        </div>
                     </section>
                 </section>
 

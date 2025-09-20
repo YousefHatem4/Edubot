@@ -15,6 +15,8 @@ import BotInfo from './Components/TeacherPage/ManageBot/BotInfo';
 import ManageBot from './Components/TeacherPage/ManageBot/ManageBot';
 import StudentPage from './Components/StudentPage/StudentPage';
 import StudentChatbot from './Components/StudentPage/StudentChatbot';
+import UserContextProvider from './Components/Context/userContext';
+import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute';
 
 
 const routers = createBrowserRouter([
@@ -23,16 +25,16 @@ const routers = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Home /> },
-      { path: "upload", element: <Upload /> },
-      { path: "edubot", element: <StudentChatbot /> },
+      { path: "upload", element: <ProtectedRoute><Upload /></ProtectedRoute> },
+      { path: "edubot", element: <ProtectedRoute><StudentChatbot /></ProtectedRoute> },
       { path: "register", element: <Register /> },
       { path: "login", element: <Login /> },
       { path: "forgetpass", element: <ForgetPass /> },
-      { path: "teacher-page", element: <TeacherPage /> },
-      { path: "student-page", element: <StudentPage /> },
-      { path: "botinfo", element: <BotInfo /> },
-      { path: "managebot", element: <ManageBot /> },
-      
+      { path: "teacher-page", element: <ProtectedRoute><TeacherPage /></ProtectedRoute> },
+      { path: "student-page", element: <ProtectedRoute><StudentPage /></ProtectedRoute> },
+      { path: "botinfo", element: <ProtectedRoute><BotInfo /></ProtectedRoute> },
+      { path: "managebot", element: <ProtectedRoute><ManageBot /></ProtectedRoute> },
+
     ]
   }
 ])
@@ -40,7 +42,9 @@ const routers = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={routers}></RouterProvider>
+      <UserContextProvider>
+        <RouterProvider router={routers}></RouterProvider>
+      </UserContextProvider>
     </>
   )
 }
