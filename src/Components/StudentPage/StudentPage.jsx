@@ -31,13 +31,10 @@ export default function StudentPage() {
             localStorage.removeItem('userData');
             // Clear any other auth-related data if exists
             localStorage.removeItem('refreshToken');
-
             // Update context state
             setUserToken(null);
-
             // Show success message
             toast.success("Logged out successfully 👋");
-
             // Redirect to login page
             navigate('/login', { replace: true });
         } catch (error) {

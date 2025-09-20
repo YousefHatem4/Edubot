@@ -1,22 +1,142 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faEye, faEyeSlash, faLock, faPenToSquare, faRobot, faUser, faXmark } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
+import toast from 'react-hot-toast'
 
 export default function StudentProfile() {
     const [enabled, setEnabled] = useState(false)
-    const [email, setEmail] = useState("Mohamed@gmail.com")
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
-    const [name, setName] = useState("Mohamed Bahaa")
+    const [name, setName] = useState("")
     const [isEditing, setIsEditing] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const [userData, setUserData] = useState(null)
 
-    const handleSubmit = (e) => {
+    // Fetch user data on component mount
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                setLoading(true)
+                const token = localStorage.getItem('userToken')
+
+                if (!token) {
+                    toast.error("No authentication token found")
+                    return
+                }
+
+                const response = await axios.get('http://16.171.18.65:8000/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                const data = response.data
+                setUserData(data)
+                setName(data.name)
+                setEmail(data.email)
+
+            } catch (error) {
+                console.error('Error fetching user data:', error)
+                if (error.response?.status === 401) {
+                    toast.error("Authentication failed. Please login again.")
+                    // Optionally redirect to login page
+                } else {
+                    toast.error("Failed to load profile data")
+                }
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchUserData()
+    }, [])
+
+    // Format date function
+    const formatDate = (dateString) => {
+        if (!dateString) return "N/A"
+        const date = new Date(dateString)
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })
+    }
+
+    // Get initials for avatar
+    const getInitials = (name) => {
+        if (!name) return "U"
+        return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        setIsEditing(false)
+        try {
+            const token = localStorage.getItem('userToken')
+
+            const updateData = {
+                name: name,
+                email: email
+            }
+
+            if (password) {
+                updateData.password = password
+            }
+
+            await axios.put('http://16.171.18.65:8000/users/me', updateData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+
+            // Update local userData
+            setUserData(prev => ({
+                ...prev,
+                name: name,
+                email: email
+            }))
+
+            toast.success("Profile updated successfully!")
+            setIsEditing(false)
+            setPassword("") // Clear password field
+
+        } catch (error) {
+            console.error('Error updating profile:', error)
+            if (error.response?.data?.detail) {
+                toast.error(error.response.data.detail)
+            } else {
+                toast.error("Failed to update profile")
+            }
+        }
     }
 
     const handleCancel = () => {
+        // Reset form values to original data
+        if (userData) {
+            setName(userData.name)
+            setEmail(userData.email)
+        }
+        setPassword("")
         setIsEditing(false)
+    }
+
+    if (loading) {
+        return (
+            <section className="min-h-screen bg-gradient-to-r from-[#0A0710] to-[#1B0034] opacity-100 p-6 md:p-15 flex items-center justify-center">
+                <div className="text-white text-xl">Loading profile...</div>
+            </section>
+        )
+    }
+
+    if (!userData) {
+        return (
+            <section className="min-h-screen bg-gradient-to-r from-[#0A0710] to-[#1B0034] opacity-100 p-6 md:p-15 flex items-center justify-center">
+                <div className="text-white text-xl">Failed to load profile data</div>
+            </section>
+        )
     }
 
     return <>
@@ -27,24 +147,32 @@ export default function StudentProfile() {
                 <div className="h-auto rounded-[9px] bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] px-4 sm:px-5 md:px-8 lg:px-15 py-4 sm:py-6 md:py-8 lg:py-12 flex flex-col md:flex-row justify-between gap-4 md:gap-0">
                     <div className="flex flex-col md:flex-row gap-4 md:gap-5 items-center">
 
-                        <img src="bahaa.jpg" className='w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-[96px] lg:h-[96px] shadow-black/10 object-cover rounded-full opacity-100' alt="" />
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-[96px] lg:h-[96px] rounded-full opacity-100 bg-[linear-gradient(135deg,#8B5CF6_25%,#3B82F6_95.71%)] shadow-lg flex items-center justify-center shadow-black/10">
+                            <h1 className="font-inter font-bold text-[16px] sm:text-[18px] md:text-[20.4px] leading-[32px] tracking-[0] align-middle text-white">
+                                {getInitials(userData.name)}
+                            </h1>
+                        </div>
 
                         <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 text-center md:text-left">
                             <h1 className="font-poppins font-bold text-lg sm:text-xl md:text-[24px] lg:text-[28px] leading-[100%] tracking-[0.2px] text-[#E5E7EB]">
-                                Mr. Mohamed Bahaa
+                                {userData.name}
                             </h1>
 
                             <div className="flex flex-wrap justify-center md:justify-start items-center gap-2">
                                 <div className="w-auto min-w-[63px] h-[28px] px-2 rounded-full opacity-100 bg-[#A78BFA33] flex items-center justify-center">
-                                    <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#8B5CF6]">Student</h1>
+                                    <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#8B5CF6] capitalize">
+                                        {userData.role}
+                                    </h1>
                                 </div>
                                 <div className="w-auto min-w-[63px] h-[28px] px-2 rounded-full opacity-100 bg-[#22C55E33] flex items-center justify-center">
-                                    <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#22C55E]">Active</h1>
+                                    <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#22C55E]">
+                                        {userData.is_active ? 'Active' : 'Inactive'}
+                                    </h1>
                                 </div>
                             </div>
 
                             <p className="font-poppins font-medium text-xs sm:text-sm md:text-[14px] lg:text-[16px] text-[#9CA3AF]">
-                                Member since January 15, 2023
+                                Member since {formatDate(userData.created_at)}
                             </p>
                         </div>
                     </div>
@@ -73,32 +201,39 @@ export default function StudentProfile() {
                         <div className='flex flex-col gap-3 md:gap-4'>
                             <div>
                                 <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>Name</p>
-                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>Mr. Mohamed Bahaa</h1>
+                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>{userData.name}</h1>
                             </div>
                             <div>
                                 <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>Email</p>
-                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>alex.johnson@example.com</h1>
+                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>{userData.email}</h1>
                             </div>
                             <div>
                                 <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>Role</p>
-                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>Student</h1>
+                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium capitalize'>{userData.role}</h1>
                             </div>
                         </div>
 
                         {/* left part */}
                         <div className='flex flex-col gap-3 md:gap-4 mt-4 md:mt-0'>
-                            <div>
-                                <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>Bot Limit</p>
-                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>3</h1>
-                            </div>
-                            <div>
-                                <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>Current Bots</p>
-                                <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>2</h1>
-                            </div>
+                            {/* Only show these fields if user has student_profile or if they are a student */}
+                            {userData.role === 'student' && (
+                                <>
+                                    <div>
+                                        <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>Account Created</p>
+                                        <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>{formatDate(userData.created_at)}</h1>
+                                    </div>
+                                    <div>
+                                        <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>User ID</p>
+                                        <h1 className='text-white text-sm sm:text-[15px] md:text-[16px] font-medium'>{userData._id}</h1>
+                                    </div>
+                                </>
+                            )}
                             {/* status */}
                             <section className=''>
                                 <p className='text-[#9CA3AF] mb-1 md:mb-2 text-xs sm:text-[12px] md:text-[13.33px]'>Status</p>
-                                <h1 className='text-[#22C55E] text-xs sm:text-[13px] md:text-[13.33px]'>Active</h1>
+                                <h1 className={`text-xs sm:text-[13px] md:text-[13.33px] ${userData.is_active ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                                    {userData.is_active ? 'Active' : 'Inactive'}
+                                </h1>
                             </section>
                         </div>
                     </section>
@@ -113,7 +248,7 @@ export default function StudentProfile() {
                     {/* main part */}
                     <section className='w-full h-auto rounded-[16px] flex flex-col sm:flex-row justify-between p-4 bg-[#100E17] opacity-100 gap-4 sm:gap-0'>
                         <div>
-                            <h1 className='font-poppins font-semibold text-base sm:text-lg md:text-[18px] leading-[28px] text-white align-middle'>Mr.Mohamed Bahaa</h1>
+                            <h1 className='font-poppins font-semibold text-base sm:text-lg md:text-[18px] leading-[28px] text-white align-middle'>{userData.name}</h1>
                             <h2 className='font-poppins font-semibold text-base sm:text-lg md:text-[18px] leading-[28px] text-white'>Math Bot helper</h2>
                             <p className='font-poppins font-normal text-xs sm:text-sm md:text-[14px] leading-[20px] text-[#9CA3AF] align-middle'>Valid until: 2024-12-31 (365 days left)</p>
                         </div>
@@ -121,7 +256,6 @@ export default function StudentProfile() {
                             <div className="w-auto min-w-[63px] h-[28px] px-2 rounded-full opacity-100 bg-[#22C55E33] flex items-center justify-center">
                                 <h1 className="font-poppins font-medium text-xs sm:text-[11.9px] text-[#22C55E]">Active</h1>
                             </div>
-                           
                         </div>
                     </section>
                 </section>
@@ -132,7 +266,6 @@ export default function StudentProfile() {
 
                     {/* main section */}
                     <section className='w-full h-auto rounded-[12px] px-4 py-4 flex gap-4 bg-[#100E17] opacity-100 items-center'>
-
                         <FontAwesomeIcon className='text-[#4ADE80] text-xl sm:text-2xl' icon={faRobot}></FontAwesomeIcon>
                         <div>
                             <h1 className='font-poppins font-semibold text-sm sm:text-base md:text-[16px] leading-[24px] text-white align-middle'>Math Bot</h1>
@@ -190,17 +323,6 @@ export default function StudentProfile() {
                             className="w-full h-[53px] rounded-[12px] border-2 border-[#374151] 
                px-4 sm:px-[18px] pt-[13px] pb-[14px] bg-[#100E17] opacity-100
                font-poppins font-normal text-sm sm:text-base leading-[100%] text-[#6B7280] 
-               focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]
-               hover:border-[#A78BFA] transition focus:text-white"
-                        />
-
-                        {/* Input 2 */}
-                        <input
-                            type="text"
-                            placeholder="Optional note..."
-                            className="w-full h-[100px] rounded-[12px] border-2 border-[#374151] 
-               px-4 sm:px-[18px] pt-[14px] pb-[62px] bg-[#100E17] opacity-100
-               font-poppins font-normal text-sm sm:text-base leading-6 text-[#6B7280] 
                focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]
                hover:border-[#A78BFA] transition focus:text-white"
                         />
@@ -276,7 +398,7 @@ export default function StudentProfile() {
                                         />
                                     </div>
 
-                                    <label htmlFor="pass" className="block mt-4 sm:mt-6 md:mt-8 text-lg sm:text-xl md:text-[26px] text-[#E5E7EB]">Password</label>
+                                    <label htmlFor="pass" className="block mt-4 sm:mt-6 md:mt-8 text-lg sm:text-xl md:text-[26px] text-[#E5E7EB]">Password (optional)</label>
                                     <div className="relative mt-3 md:mt-5">
                                         <FontAwesomeIcon className='absolute left-4 md:left-5 top-1/2 -translate-y-1/2 text-[#ADAEBC]' icon={faLock} />
                                         <FontAwesomeIcon
@@ -290,8 +412,7 @@ export default function StudentProfile() {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             className="ps-12 md:ps-14 w-full h-[50px] sm:h-[60px] md:h-[70px] rounded-[12px] border-2 border-[#E5E7EB] text-[#656567] focus:text-[#E5E7EB] focus:border-[#8E2DE2] focus:ring-2 focus:ring-[#8E2DE2]"
-                                            placeholder="*********"
-                                            required
+                                            placeholder="Leave blank to keep current password"
                                         />
                                     </div>
 

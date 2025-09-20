@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBook, faChartBar, faGear, faGraduationCap, faHome, faRobot, faUsers, faBars, faXmark, faPlusCircle, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import Dashboard from './Dashboard';
 import Setting from './ManageBot/Setting';
 import CreateChat from './CreateChat';
 import Profile from './Profile';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Upload from './Upload';
+import { userContext } from '../Context/userContext';
+import toast from 'react-hot-toast';
 
 
 export default function TeacherPage() {
@@ -17,6 +19,33 @@ export default function TeacherPage() {
   const [setting, setSetting] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [upload, setUpload] = useState(false); // new state
+  const { setUserToken } = useContext(userContext);
+  const navigate = useNavigate();
+
+  // Logout function
+  const handleLogout = () => {
+    try {
+      // Clear user token from localStorage
+      localStorage.removeItem('userToken');
+      // Clear user data from localStorage
+      localStorage.removeItem('userData');
+      // Clear any other auth-related data if exists
+      localStorage.removeItem('refreshToken');
+
+      localStorage.removeItem('registeredRole');
+      // Update context state
+      setUserToken(null);
+
+      // Show success message
+      toast.success("Logged out successfully 👋");
+
+      // Redirect to login page
+      navigate('/login', { replace: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error("Error logging out. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -137,12 +166,12 @@ export default function TeacherPage() {
 
 
               {/* Logout */}
-              <Link to={'/login'}
+              <div onClick={handleLogout}
                 className={`flex items-center md:mt-10 gap-3 px-4 py-3 rounded-[4.31px] cursor-pointer transition-all duration-300 hover:bg-[linear-gradient(91.27deg,rgba(139,92,246,0.5)_0.46%,rgba(236,72,153,0.5)_99.62%)] hover:scale-105
                 `}>
                 <FontAwesomeIcon className="text-[#EF4444] text-3xl" icon={faRightFromBracket} />
                 <h1 className=" font-semibold text-[17.25px] leading-[25.88px] tracking-[1%] text-white">Logout</h1>
-              </Link>
+              </div>
             </section>
           </section>
 
