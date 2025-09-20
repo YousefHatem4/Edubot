@@ -19,8 +19,13 @@ function cn(...parts) {
   return parts.filter(Boolean).join(" ");
 }
 
-/* ---------- Subcomponents ---------- */
+/* Arabic text detection utility */
+function isArabicText(text) {
+  const arabicRegex = /[\u0600-\u06FF\u0750-\u077F]/;
+  return arabicRegex.test(text);
+}
 
+/* ---------- Subcomponents ---------- */
 const HeaderMobile = ({ menuOpen, setMenuOpen }) => (
   <div className="lg:hidden fixed top-0 left-0 w-full bg-gradient-to-r from-[#0F0A1F] to-[#1E1B29] z-40 flex justify-between items-center px-4 py-3 shadow-md">
     <div className="flex items-center gap-3">
@@ -62,31 +67,40 @@ const SidebarHeader = ({ collapsed, setCollapsed }) => (
         className="cursor-pointer transform transition-transform duration-300 hover:scale-110 hidden lg:block"
         onClick={() => setCollapsed((v) => !v)}
       >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={cn("transform transition-transform duration-500", collapsed ? "rotate-180" : "")}
-        >
-          <path d="M22 6L14 6" stroke="#E5E7EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          <path
-            d="M2 6C2 4.59987 2 3.8998 2.27248 3.36502C2.51217 2.89462 2.89462 2.51217 3.36502 2.27248C3.8998 2 4.59987 2 6 2C7.40013 2 8.1002 2 8.63498 2.27248C9.10538 2.51217 9.48783 2.89462 9.72752 3.36502C10 3.8998 10 4.59987 10 6C10 7.40013 10 8.1002 9.72752 8.63498C9.48783 9.10538 9.10538 9.48783 8.63498 9.72752C8.1002 10 7.40013 10 6 10C4.59987 10 3.8998 10 3.36502 9.72752C2.89462 9.4878 2.51217 9.10538 2.27248 8.63498C2 8.1002 2 7.40013 2 6Z"
-            stroke="#E5E7EB"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M2 18C2 16.5999 2 15.8998 2.27248 15.365C2.51217 14.8946 2.89462 14.5122 3.36502 14.2725C3.8998 14 4.59987 14 6 14C7.40013 14 8.1002 14 8.63498 14.2725C9.10538 14.5122 9.48783 14.8946 9.72752 15.365C10 15.8998 10 16.5999 10 18C10 19.4001 10 20.1002 9.72752 20.635C9.48783 21.1054 9.10538 21.4878 8.63498 21.7275C8.1002 22 7.40013 22 6 22C4.59987 22 3.8998 22 3.36502 21.7275C2.89462 21.4878 2.51217 21.1054 2.27248 20.635C2 20.1002 2 19.4001 2 18Z"
-            stroke="#FFFFFF"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M14 18C14 16.5999 14 15.8998 14.2725 15.365C14.5122 14.8946 14.8946 14.5122 15.365 14.2725C15.8998 14 16.5999 14 18 14C19.4001 14 20.1002 14 20.635 14.2725C21.1054 14.5122 21.4878 14.8946 21.7275 15.365C22 15.8998 22 16.5999 22 18C22 19.4001 22 20.1002 21.7275 20.635C21.4878 21.1054 21.1054 21.4878 20.635 21.7275C20.1002 22 19.4001 22 18 22C16.5999 22 15.8998 22 15.365 21.7275C14.8946 21.4878 14.5122 21.1054 14.2725 20.635C14 20.1002 14 19.4001 14 18Z"
-            stroke="#E5E7EB"
-            strokeWidth="1.5"
-          />
-        </svg>
+        {collapsed ? <>
+          <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.5 1.5V9.5M21.5 5.5L13.5 5.5" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M1.5 5.5C1.5 4.09987 1.5 3.3998 1.77248 2.86502C2.01217 2.39462 2.39462 2.01217 2.86502 1.77248C3.3998 1.5 4.09987 1.5 5.5 1.5C6.90013 1.5 7.6002 1.5 8.13498 1.77248C8.60538 2.01217 8.98783 2.39462 9.22752 2.86502C9.5 3.3998 9.5 4.09987 9.5 5.5C9.5 6.90013 9.5 7.6002 9.22752 8.13498C8.98783 8.60538 8.60538 8.98783 8.13498 9.22752C7.6002 9.5 6.90013 9.5 5.5 9.5C4.09987 9.5 3.3998 9.5 2.86502 9.22752C2.39462 8.98783 2.01217 8.60538 1.77248 8.13498C1.5 7.6002 1.5 6.90013 1.5 5.5Z" stroke="#E5E7EB" stroke-width="1.5" />
+            <path d="M1.5 17.5C1.5 16.0999 1.5 15.3998 1.77248 14.865C2.01217 14.3946 2.39462 14.0122 2.86502 13.7725C3.3998 13.5 4.09987 13.5 5.5 13.5C6.90013 13.5 7.6002 13.5 8.13498 13.7725C8.60538 14.0122 8.98783 14.3946 9.22752 14.865C9.5 15.3998 9.5 16.0999 9.5 17.5C9.5 18.9001 9.5 19.6002 9.22752 20.135C8.98783 20.6054 8.60538 20.9878 8.13498 21.2275C7.6002 21.5 6.90013 21.5 5.5 21.5C4.09987 21.5 3.3998 21.5 2.86502 21.2275C2.39462 20.9878 2.01217 20.6054 1.77248 20.135C1.5 19.6002 1.5 18.9001 1.5 17.5Z" stroke="#E5E7EB" stroke-width="1.5" />
+            <path d="M13.5 17.5C13.5 16.0999 13.5 15.3998 13.7725 14.865C14.0122 14.3946 14.3946 14.0122 14.865 13.7725C15.3998 13.5 16.0999 13.5 17.5 13.5C18.9001 13.5 19.6002 13.5 20.135 13.7725C20.6054 14.0122 20.9878 14.3946 21.2275 14.865C21.5 15.3998 21.5 16.0999 21.5 17.5C21.5 18.9001 21.5 19.6002 21.2275 20.135C20.9878 20.6054 20.6054 20.9878 20.135 21.2275C19.6002 21.5 18.9001 21.5 17.5 21.5C16.0999 21.5 15.3998 21.5 14.865 21.2275C14.3946 20.9878 14.0122 20.6054 13.7725 20.135C13.5 19.6002 13.5 18.9001 13.5 17.5Z" stroke="#E5E7EB" stroke-width="1.5" />
+          </svg>
+        </> : <>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={cn("transform transition-transform duration-500", collapsed ? "rotate-180" : "")}
+          >
+            <path d="M22 6L14 6" stroke="#E5E7EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M2 6C2 4.59987 2 3.8998 2.27248 3.36502C2.51217 2.89462 2.89462 2.51217 3.36502 2.27248C3.8998 2 4.59987 2 6 2C7.40013 2 8.1002 2 8.63498 2.27248C9.10538 2.51217 9.48783 2.89462 9.72752 3.36502C10 3.8998 10 4.59987 10 6C10 7.40013 10 8.1002 9.72752 8.63498C9.48783 9.10538 9.10538 9.48783 8.63498 9.72752C8.1002 10 7.40013 10 6 10C4.59987 10 3.8998 10 3.36502 9.72752C2.89462 9.4878 2.51217 9.10538 2.27248 8.63498C2 8.1002 2 7.40013 2 6Z"
+              stroke="#E5E7EB"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M2 18C2 16.5999 2 15.8998 2.27248 15.365C2.51217 14.8946 2.89462 14.5122 3.36502 14.2725C3.8998 14 4.59987 14 6 14C7.40013 14 8.1002 14 8.63498 14.2725C9.10538 14.5122 9.48783 14.8946 9.72752 15.365C10 15.8998 10 16.5999 10 18C10 19.4001 10 20.1002 9.72752 20.635C9.48783 21.1054 9.10538 21.4878 8.63498 21.7275C8.1002 22 7.40013 22 6 22C4.59987 22 3.8998 22 3.36502 21.7275C2.89462 21.4878 2.51217 21.1054 2.27248 20.635C2 20.1002 2 19.4001 2 18Z"
+              stroke="#FFFFFF"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M14 18C14 16.5999 14 15.8998 14.2725 15.365C14.5122 14.8946 14.8946 14.5122 15.365 14.2725C15.8998 14 16.5999 14 18 14C19.4001 14 20.1002 14 20.635 14.2725C21.1054 14.5122 21.4878 14.8946 21.7275 15.365C22 15.8998 22 16.5999 22 18C22 19.4001 22 20.1002 21.7275 20.635C21.4878 21.1054 21.1054 21.4878 20.635 21.7275C20.1002 22 19.4001 22 18 22C16.5999 22 15.8998 22 15.365 21.7275C14.8946 21.4878 14.5122 21.1054 14.2725 20.635C14 20.1002 14 19.4001 14 18Z"
+              stroke="#E5E7EB"
+              strokeWidth="1.5"
+            />
+          </svg>
+        </>}
       </div>
     </div>
   </div>
@@ -136,7 +150,6 @@ const ProfileNav = forwardRef(
           )}>
             MohamedBB@@gmail.com
           </h1>
-
           <section className={cn(
             "mt-2 flex flex-col gap-2 p-2 w-full",
             collapsed && !isMobile ? "items-center" : ""
@@ -159,7 +172,6 @@ const ProfileNav = forwardRef(
                 </h1>
               ) : null}
             </Link>
-
             <Link
               to={"/edubot"}
               className={cn(
@@ -182,7 +194,6 @@ const ProfileNav = forwardRef(
                 </h1>
               ) : null}
             </Link>
-
             <div
               onClick={() => {
                 navigate("/student-page", { state: { openTab: "studyArea" } });
@@ -203,7 +214,6 @@ const ProfileNav = forwardRef(
                 </h1>
               ) : null}
             </div>
-
             <Link
               to={"/login"}
               className={cn(
@@ -227,40 +237,63 @@ const ProfileNav = forwardRef(
   }
 );
 
-const MessageBubble = ({ message, isBot }) => (
-  <div className={cn("max-w-[85%] md:max-w-[70%] p-4 rounded-2xl", isBot ? "bg-[#2D2A3B] text-[#F3F4F6]" : "bg-[#9333EA6B] text-[#F3F4F6]")}>
-    <p className="font-poppins font-normal text-[13.33px] leading-[160%] break-words">{message.text}</p>
-    {isBot && message.explanation && (
-      <div className="mt-2 pt-2 border-t border-[#FFFFFF33]">
-        <p className="text-[12px] text-[#CCCCCC] break-words">{message.explanation}</p>
-      </div>
-    )}
-  </div>
-);
+const MessageBubble = ({ message, isBot, collapsed, isMobile }) => {
+  const isArabic = isArabicText(message.text);
 
-const BotTyping = () => (
-  <div className="max-w-[85%] md:max-w-[70%] p-4 rounded-2xl bg-[#2D2A3B]">
+  return (
+    <div
+      className={cn(
+        "max-w-[100%] md:max-w-[100%] p-4 rounded-2xl",
+        isBot ? "text-[#F3F4F6]" : "bg-[#9333EA6B] text-[#F3F4F6]",
+        isBot && collapsed && !isMobile ? "-ms-35" : "",
+        isArabic && isBot && collapsed ? '-ms-[15px]' : '' 
+      )}
+      dir={isBot && isArabic ? "rtl" : "ltr"}
+      style={{
+        textAlign: isBot && isArabic ? "right" : "left"
+      }}
+    >
+      <p className="font-poppins font-normal text-[13.33px] leading-[160%] break-words">{message.text}</p>
+      {isBot && message.explanation && (
+        <div className="mt-2 pt-2 border-t border-[#FFFFFF33]">
+          <p
+            className="text-[12px] text-[#CCCCCC] break-words"
+            dir={isArabicText(message.explanation) ? "rtl" : "ltr"}
+            style={{
+              textAlign: isArabicText(message.explanation) ? "right" : "left"
+            }}
+          >
+            {message.explanation}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const BotTyping = ({ collapsed, isMobile }) => (
+  <div className={cn(
+    "max-w-[85%] md:max-w-[70%] p-4 rounded-2xl bg-[#2D2A3B]",
+    collapsed && !isMobile ? "ms-[30px]" : ""
+  )}>
     <div className="flex space-x-2">
       <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" />
       <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" style={{ animationDelay: "0.2s" }} />
-      <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" style={{ animationDelay: "0.4s" }} />
+      <div className="w-2 h-2 rounded-full bg-[#F3F4F6] animate-bounce" style={{ animationDelay: "0.2s" }} />
     </div>
   </div>
 );
 
 /* ---------- Main Component ---------- */
-
 export default function StudentChatbot() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Math Bot");
-
   // KEY CHANGE: Initialize collapsed state based on screen size
   const [collapsed, setCollapsed] = useState(() => {
     // Only collapse on desktop/larger screens initially
     return window.innerWidth >= 1024;
   });
-
   const [sidebarWidth, setSidebarWidth] = useState(324);
   const [contentVisible, setContentVisible] = useState(true);
   const [studentProfile, setStudentProfile] = useState(false);
@@ -275,7 +308,6 @@ export default function StudentChatbot() {
   const [isTablet, setIsTablet] = useState(window.innerWidth < 1280 && window.innerWidth >= 768);
   const options = ["chemistry Bot", "biology Bot", "English Bot"];
   const [showLine, setShowLine] = useState(() => window.innerWidth >= 1024);
-
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const profileNavRef = useRef(null);
@@ -293,7 +325,6 @@ export default function StudentChatbot() {
         setShowProfileNav(false);
       }
     }
-
     if (showProfileNav) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
@@ -330,21 +361,17 @@ export default function StudentChatbot() {
       const width = window.innerWidth;
       const newIsMobile = width < 1024;
       const newIsTablet = width < 1280 && width >= 768;
-
       setIsMobile(newIsMobile);
       setIsTablet(newIsTablet);
-
       if (width >= 1024) {
         setMenuOpen(false);
       }
-
       // KEY CHANGE: Only force collapse state changes on desktop
       // Mobile screens should always stay expanded (not collapsed)
       if (newIsMobile) {
         setCollapsed(false);
       }
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -355,26 +382,38 @@ export default function StudentChatbot() {
     setMessages((prev) => [...prev, newMessage]);
     setInputMessage("");
     setIsTyping(true);
+
     setTimeout(() => {
+      // Check if user message contains Arabic to respond in Arabic
+      const userMessageIsArabic = isArabicText(inputMessage);
+
       const botResponses = {
-        physics:
-          "Newton's First Law states that an object will remain at rest or in uniform motion in a straight line unless acted upon by an external force. This is also known as the law of inertia.",
-        math: "The Pythagorean theorem states that in a right triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides.",
-        chemistry:
-          "The periodic table is a tabular arrangement of chemical elements, organized by atomic number, electron configuration, and recurring chemical properties.",
-        default:
-          "I'm here to help with your studies! Could you please clarify which subject you need assistance with?",
+        physics: userMessageIsArabic
+          ? "قانون نيوتن الأول ينص على أن الجسم سيبقى في حالة سكون أو في حركة منتظمة في خط مستقيم ما لم تؤثر عليه قوة خارجية. هذا ما يُعرف أيضاً بقانون القصور الذاتي."
+          : "Newton's First Law states that an object will remain at rest or in uniform motion in a straight line unless acted upon by an external force. This is also known as the law of inertia.",
+        math: userMessageIsArabic
+          ? "نظرية فيثاغورس تنص على أنه في المثلث القائم الزاوية، مربع الوتر يساوي مجموع مربعي الضلعين الآخرين."
+          : "The Pythagorean theorem states that in a right triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides.",
+        chemistry: userMessageIsArabic
+          ? "الجدول الدوري هو ترتيب جدولي للعناصر الكيميائية، منظم حسب العدد الذري والتكوين الإلكتروني والخصائص الكيميائية المتكررة."
+          : "The periodic table is a tabular arrangement of chemical elements, organized by atomic number, electron configuration, and recurring chemical properties.",
+        default: userMessageIsArabic
+          ? "أنا هنا لمساعدتك في دراستك! هل يمكنك توضيح المادة التي تحتاج مساعدة فيها؟"
+          : "I'm here to help with your studies! Could you please clarify which subject you need assistance with?",
       };
-      const subject = selected.toLowerCase();
+
+      const subject = selected.toLowerCase().replace(' bot', '');
       const botMessage = {
         text: botResponses[subject] || botResponses.default,
         sender: "bot",
         timestamp: new Date(),
-        explanation:
-          subject === "physics"
+        explanation: subject === "physics" && userMessageIsArabic
+          ? "على سبيل المثال، كتاب على طاولة يبقى في مكانه حتى تدفعه. وبالمثل، كرة متحركة ستستمر في الحركة إلى الأبد إذا لم يكن هناك احتكاك أو مقاومة هوائية لإبطائها."
+          : subject === "physics"
             ? "For example, a book on a table stays put until you push it. Similarly, a moving ball would continue moving forever if friction and air resistance didn't slow it down."
             : "",
       };
+
       setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
     }, 1500);
@@ -408,21 +447,22 @@ export default function StudentChatbot() {
     <section className="flex flex-col h-screen overflow-hidden overflow-x-hidden overscroll-contain">
       <section className="flex flex-1 min-h-0">
         <HeaderMobile menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
-        {/* Sidebar */}
+        {/* Sidebar with flex layout */}
         <section
           className={cn(
-            "sidebar bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] backdrop-blur-xl border-r border-white/10 p-5 flex flex-col justify-between shadow-2xl transform transition-all duration-500 ease-in-out fixed lg:sticky lg:top-0 z-30 h-screen min-h-0 overflow-y-auto overflow-x-hidden",
-            "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
+            "sidebar bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] backdrop-blur-xl border-r border-white/10 flex flex-col shadow-2xl transform transition-all duration-500 ease-in-out fixed lg:sticky lg:top-0 z-30 h-screen",
             menuOpen ? "translate-x-0" : "-translate-x-[200px]",
             "lg:translate-x-0"
           )}
           style={{ width: isMobile ? (menuOpen ? "280px" : "0") : `${sidebarWidth}px` }}
         >
-          <div className="min-w-0 flex-1">
+          {/* Fixed Header Section */}
+          <div className="flex-shrink-0 p-5">
             <SidebarHeader collapsed={collapsed} setCollapsed={setCollapsed} />
-
-            <section className="mt-10 flex flex-col gap-6">
+          </div>
+          {/* Scrollable Content Section */}
+          <div className="flex-1 min-h-0 px-5 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <section className="flex flex-col gap-6 mt-6 ms:mt-0">
               {/* New Chat */}
               <div
                 className={cn(
@@ -440,7 +480,6 @@ export default function StudentChatbot() {
                   New Chat
                 </h1>
               </div>
-
               {/* Bot Selector */}
               <div className={cn(collapsed && !isMobile ? "w-[124px]" : "w-full md:w-[260px] md:ms-4", "overflow-x-hidden")}>
                 <div
@@ -452,7 +491,6 @@ export default function StudentChatbot() {
                     <FontAwesomeIcon icon={open ? faChevronUp : faChevronDown} className="text-[#9CA3AF] text-sm" />
                   </div>
                 </div>
-
                 <div
                   className={cn(
                     "overflow-hidden transition-all duration-500 ease-in-out",
@@ -476,13 +514,11 @@ export default function StudentChatbot() {
                   </div>
                 </div>
               </div>
-
               {showLine && (
                 <div className="transition-all duration-500 ease-in-out">
                   <div className="w-[124px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
               )}
-
               {/* Collapsible content */}
               <div
                 className={cn(
@@ -493,7 +529,6 @@ export default function StudentChatbot() {
                 <div className="flex justify-center transition-all duration-300 ease-in-out">
                   <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
-
                 {/* History */}
                 <section className="mt-6">
                   <div className="w-[143.2px] h-[40px] rounded-tr-lg rounded-br-lg bg-[#6D28D9] opacity-100 flex items-center justify-center">
@@ -504,10 +539,9 @@ export default function StudentChatbot() {
                   <h2 className="font-Poppins mt-9 font-normal text-[13.33px] leading-[100%] tracking-normal align-middle text-white">
                     History Chats
                   </h2>
-
                   <section className="flex flex-col gap-4 mt-4">
                     {["Forces and Motion", "Energy Conversion", "Electrical Circuits", "Wave Properties"].map((t, i) => (
-                      <div key={i} className="w-full h-[73.6px] rounded-[12px] bg-[#2D2A3B] opacity-100 border border-[#A855F733] p-3">
+                      <div key={i} className="w-[95%] h-[73.6px] rounded-[12px] bg-[#2D2A3B] opacity-100 border border-[#A855F733] p-3">
                         <h1 className="font-Inter font-medium text-[13.6px] leading-[24px] tracking-normal text-white align-middle">
                           {t}
                         </h1>
@@ -519,58 +553,58 @@ export default function StudentChatbot() {
                     ))}
                   </section>
                 </section>
-
                 <div className="flex justify-center transition-all duration-300 ease-in-out mt-6">
                   <div className="w-[300px] bg-[#FFFFFF4D] h-[0.7px]" />
                 </div>
               </div>
+              {/* Add some bottom padding to ensure scrolling works well */}
+              <div className="h-4"></div>
             </section>
           </div>
-
-          {/* Profile Section - positioned at bottom */}
-          <div className="relative mt-50">
-            {/* Profile Navigation - Fixed positioned outside sidebar for desktop, above profile for mobile */}
-            {isMobile ? (
-              <ProfileNav
-                ref={profileNavRef}
-                showProfileNav={showProfileNav}
-                isMobile={isMobile}
-                collapsed={collapsed}
-                studentProfile={studentProfile}
-                chatbot={chatbot}
-                studyArea={studyArea}
-                setMenuOpen={setMenuOpen}
-                navigate={navigate}
-              />
-            ) : null}
-
-            {/* Profile trigger */}
-            <div
-              ref={profileTriggerRef}
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={handleProfileClick}
-            >
-              <img
-                src="bahaa.jpg"
-                className={cn(
-                  "w-[60px] h-[60px] rounded-full opacity-100 object-cover transition-all duration-300",
-                  collapsed && !isMobile ? "ms-6" : ""
-                )}
-                alt="profile image"
-              />
+          {/* Fixed Profile Section at Bottom */}
+          <div className="flex-shrink-0 p-5 border-t border-white/10">
+            <div className="relative">
+              {/* Profile Navigation - Fixed positioned outside sidebar for desktop, above profile for mobile */}
+              {isMobile ? (
+                <ProfileNav
+                  ref={profileNavRef}
+                  showProfileNav={showProfileNav}
+                  isMobile={isMobile}
+                  collapsed={collapsed}
+                  studentProfile={studentProfile}
+                  chatbot={chatbot}
+                  studyArea={studyArea}
+                  setMenuOpen={setMenuOpen}
+                  navigate={navigate}
+                />
+              ) : null}
+              {/* Profile trigger */}
               <div
-                className={cn(
-                  "flex flex-col gap-2 transition-all duration-300 ease-in-out",
-                  collapsed && !isMobile ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
-                )}
+                ref={profileTriggerRef}
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={handleProfileClick}
               >
-                <h1 className="font-poppins font-medium text-[16px] text-white whitespace-nowrap">Mohamed Bahaa</h1>
-                <h2 className="font-poppins font-medium text-[16px] text-[#9CA3AF] whitespace-nowrap">Subscribed</h2>
+                <img
+                  src="bahaa.jpg"
+                  className={cn(
+                    "w-[60px] h-[60px] rounded-full opacity-100 object-cover transition-all duration-300",
+                    collapsed && !isMobile ? "ms-6" : ""
+                  )}
+                  alt="profile image"
+                />
+                <div
+                  className={cn(
+                    "flex flex-col gap-2 transition-all duration-300 ease-in-out",
+                    collapsed && !isMobile ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+                  )}
+                >
+                  <h1 className="font-poppins font-medium text-[16px] text-white whitespace-nowrap">Mohamed Bahaa</h1>
+                  <h2 className="font-poppins font-medium text-[16px] text-[#9CA3AF] whitespace-nowrap">Subscribed</h2>
+                </div>
               </div>
             </div>
           </div>
         </section>
-
         {/* Profile Navigation - Fixed positioned outside sidebar for desktop only */}
         {!isMobile && (
           <ProfileNav
@@ -585,22 +619,21 @@ export default function StudentChatbot() {
             navigate={navigate}
           />
         )}
-
-        {/* Main area */}
+        {/* Main area with proper layout for fixed input */}
         <section
           className={cn(
-            "flex-1 w-full h-screen min-h-0 bg-[linear-gradient(117.93deg,#0F0A1F_0.23%,#1E1B29_79.52%)] transition-all duration-300 relative",
+            "flex-1 w-full h-screen min-h-0 bg-[linear-gradient(117.93deg,#0F0A1F_0.23%,#1E1B29_79.52%)] transition-all duration-300 relative flex flex-col",
             menuOpen && isMobile ? "opacity-50 pointer-events-none" : ""
           )}
         >
           {isMobile && menuOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setMenuOpen(false)} />
           )}
-
+          {/* Messages Area - Now properly contained */}
           <div
             ref={messagesContainerRef}
             className={cn(
-              "h-full pb-32 pt-20 lg:pt-6 px-4 md:px-8 overflow-y-auto overflow-x-hidden overscroll-contain",
+              "flex-1 pt-20 lg:pt-6 px-4 md:px-8 overflow-y-auto overflow-x-hidden overscroll-contain pb-24",
               "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             )}
           >
@@ -608,7 +641,7 @@ export default function StudentChatbot() {
               <section
                 className={cn(
                   "flex items-center justify-center flex-col gap-8 h-full",
-                  collapsed && !isMobile ? "mr-30" : "mr-0"
+                  collapsed && !isMobile ? "mr-5" : "mr-5"
                 )}
               >
                 <svg width="36" height="38" viewBox="0 0 36 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -630,7 +663,6 @@ export default function StudentChatbot() {
                 </h1>
               </section>
             )}
-
             {messages.length > 0 && (
               <div
                 className={cn(
@@ -640,41 +672,44 @@ export default function StudentChatbot() {
               >
                 {messages.map((message, index) => {
                   const isBot = message.sender === "bot";
+                  const isBotArabic = isBot && isArabicText(message.text);
+
                   return (
-                    <div key={index} className={cn("flex", isBot ? "justify-start" : "justify-end")}>
-                      <MessageBubble message={message} isBot={isBot} />
+                    <div
+                      key={index}
+                      className={cn(
+                        "flex",
+                        isBot
+                          ? (isBotArabic ? "justify-end" : "justify-start")
+                          : "justify-end"
+                      )}
+                    >
+                      <MessageBubble message={message} isBot={isBot} collapsed={collapsed} isMobile={isMobile} />
                     </div>
                   );
                 })}
-
                 {isTyping && (
-                  <div className="flex justify-start">
-                    <BotTyping />
+                  <div className={`flex justify-start ${collapsed && '-ms-35'} `}>
+                    <BotTyping collapsed={collapsed} isMobile={isMobile} />
                   </div>
                 )}
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
-
-          {/* Composer */}
-          <section
-            className={cn(
-              "fixed bottom-6 transform -translate-x-1/2  transition-all duration-300 z-10",
-              collapsed && !isMobile
-                ? "w-[calc(100vw-200px)] max-w-[800px] md:left-195"
-                : isMobile
-                  ? "w-[90%] max-w-[400px] left-49"
-                  : "w-[calc(100vw-370px)] max-w-[800px] md:left-230"
-            )}
-          >
-            <div className="relative">
+          {/* Fixed Input Area - Now properly layered */}
+          <div className="flex-shrink-0 p-6 border-t border-transparent">
+            <div className="relative max-w-3xl mx-auto">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                className="w-full h-[54px] rounded-[100px] px-6 py-1.5 bg-[#2D2A3B] opacity-100 font-inter font-normal text-[16px] leading-[24px] tracking-[0%] text-[#CCCCCC] pr-14 focus:outline-none focus:ring-2 focus:ring-[#9333EA]"
+                className={cn(
+                  "w-full h-[54px] rounded-[100px] px-6 py-1.5 bg-[#2D2A3B] opacity-100 font-inter font-normal text-[16px] leading-[24px] tracking-[0%] text-[#CCCCCC] pr-14 focus:outline-none focus:ring-2 focus:ring-[#9333EA]",
+                  isArabicText(inputMessage) ? "text-right" : "text-left"
+                )}
+                dir={isArabicText(inputMessage) ? "rtl" : "ltr"}
                 placeholder="Type your question..."
               />
               <button
@@ -690,7 +725,7 @@ export default function StudentChatbot() {
                 <FontAwesomeIcon icon={faPaperPlane} />
               </button>
             </div>
-          </section>
+          </div>
         </section>
       </section>
     </section>
