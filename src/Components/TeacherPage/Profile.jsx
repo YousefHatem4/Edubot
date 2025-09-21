@@ -146,7 +146,7 @@ export default function Profile() {
         <div className="h-auto md:h-[201px] rounded-[9px] bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] px-5 md:px-10 py-6 md:py-12 flex flex-col md:flex-row justify-between gap-6 md:gap-0">
           <div className="flex flex-col md:flex-row gap-5 items-center">
             <div className="w-[96px] h-[96px] rounded-full opacity-100 bg-[linear-gradient(135deg,#8B5CF6_25%,#3B82F6_95.71%)] shadow-lg flex items-center justify-center shadow-black/10">
-              <h1 className="w-[33px] h-[32px] font-inter font-bold text-[20.4px] leading-[32px] tracking-[0] align-middle ms-4.5 text-white">
+              <h1 className=" font-inter font-bold text-[20.4px] leading-[32px] tracking-[0] align-middle  text-white">
                 {getInitials(userData.name)}
               </h1>
             </div>
