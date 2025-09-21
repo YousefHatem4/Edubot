@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 
-export default function Dashboard() {
+export default function Dashboard({ onNavigateToCreateBot }) {
   // State management
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
   const [chatbots, setChatbots] = useState([])
@@ -452,7 +452,12 @@ export default function Dashboard() {
               ) : chatbots.length === 0 ? (
                 <div className='text-white text-center py-8'>
                   <p>No chatbots found</p>
-                  <Link to='/create-bot' className='text-[#8B5CF6] underline'>Create your first bot</Link>
+                    <button
+                      onClick={onNavigateToCreateBot}
+                      className='text-[#8B5CF6] underline hover:text-[#EC4899] transition-colors duration-200'
+                    >
+                      Create your first bot
+                    </button>
                 </div>
               ) : (
                 <>

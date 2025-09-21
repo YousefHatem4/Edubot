@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBook, faChartBar, faGear, faGraduationCap, faHome, faRobot, faUsers, faBars, faXmark, faPlusCircle, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import Dashboard from './Dashboard';
@@ -46,6 +46,26 @@ export default function TeacherPage() {
       toast.error("Error logging out. Please try again.");
     }
   };
+
+  // Add this useEffect in TeacherPage component, after your existing state declarations
+  useEffect(() => {
+    const handleNavigateToCreateBot = () => {
+      setDashboard(false);
+      setAi(false);
+      setChatbot(true);
+      setUpload(false);
+      setProfile(false);
+      setSetting(false);
+      setMenuOpen(false);
+    };
+
+    window.addEventListener('navigateToCreateBot', handleNavigateToCreateBot);
+
+    return () => {
+      window.removeEventListener('navigateToCreateBot', handleNavigateToCreateBot);
+    };
+  }, []);
+
 
   return (
     <>
@@ -177,7 +197,20 @@ export default function TeacherPage() {
 
           {/* right content */}
           <section className="md:ml-[350px] mt-15 md:mt-0 w-full">
-            {dashboard && <Dashboard />}
+            {dashboard && (
+              <Dashboard
+                onNavigateToCreateBot={() => {
+                  setDashboard(false);
+                  setAi(false);
+                  setChatbot(true);
+                  setUpload(false);
+                  setProfile(false);
+                  setSetting(false);
+                  setMenuOpen(false);
+                }}
+              />
+            )}
+
             {Chatbot && (
               <CreateChat
                 onNext={() => {
