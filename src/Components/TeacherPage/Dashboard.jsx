@@ -14,7 +14,8 @@ export default function Dashboard({ onNavigateToCreateBot }) {
   const [selectedBot, setSelectedBot] = useState(null)
   const [userData, setUserData] = useState(null)
   const [userLoading, setUserLoading] = useState(true)
-  const [studentRequests, setStudentRequests] = useState([])
+  const [allStudentRequests, setAllStudentRequests] = useState([])
+  const [filteredStudentRequests, setFilteredStudentRequests] = useState([])
   const [requestsLoading, setRequestsLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -43,6 +44,16 @@ export default function Dashboard({ onNavigateToCreateBot }) {
       'Content-Type': 'application/json'
     }
   }
+
+  // Filter student requests based on selected bot
+  useEffect(() => {
+    if (selectedBot && allStudentRequests.length > 0) {
+      const filtered = allStudentRequests.filter(request => request.bot_id === selectedBot._id)
+      setFilteredStudentRequests(filtered)
+    } else {
+      setFilteredStudentRequests([])
+    }
+  }, [selectedBot, allStudentRequests])
 
   // Fetch user data
   const fetchUserData = useCallback(async () => {
@@ -97,34 +108,104 @@ export default function Dashboard({ onNavigateToCreateBot }) {
     }
   }, [selectedBot])
 
-  // Fetch student access requests
+  // Fetch student access requests from memberships API
   const fetchStudentRequests = useCallback(async () => {
     try {
       setRequestsLoading(true)
-      const response = await axios.get('http://16.171.18.65:8000/student-requests/teacher/me', {
-        headers: getAuthHeaders()
-      })
-      setStudentRequests(response.data)
+
+      // Get all bots first to fetch membership requests for each
+      const allRequests = []
+
+      if (chatbots.length > 0) {
+        // Fetch membership requests for each bot
+        for (const bot of chatbots) {
+          try {
+            const response = await axios.get(`http://16.171.18.65:8000/memberships/bot/${bot._id}`, {
+              headers: getAuthHeaders()
+            })
+
+            // Process the response data and flatten the arrays
+            const botRequests = []
+
+            // Add pending requests
+            if (response.data.pending) {
+              response.data.pending.forEach(request => {
+                botRequests.push({
+                  id: request._id,
+                  student_id: request.student_id,
+                  bot_id: request.bot_id,
+                  bot_name: bot.name,
+                  status: 'pending',
+                  created_at: request.created_at,
+                  expires_at: request.expires_at
+                })
+              })
+            }
+
+            // Add accepted requests
+            if (response.data.accepted) {
+              response.data.accepted.forEach(request => {
+                botRequests.push({
+                  id: request._id,
+                  student_id: request.student_id,
+                  bot_id: request.bot_id,
+                  bot_name: bot.name,
+                  status: 'approved',
+                  created_at: request.created_at,
+                  expires_at: request.expires_at
+                })
+              })
+            }
+
+            // Add expired requests as rejected
+            if (response.data.expired) {
+              response.data.expired.forEach(request => {
+                botRequests.push({
+                  id: request._id,
+                  student_id: request.student_id,
+                  bot_id: request.bot_id,
+                  bot_name: bot.name,
+                  status: 'rejected',
+                  created_at: request.created_at,
+                  expires_at: request.expires_at
+                })
+              })
+            }
+
+            allRequests.push(...botRequests)
+          } catch (botError) {
+            console.error(`Error fetching requests for bot ${bot._id}:`, botError)
+          }
+        }
+      }
+
+      setAllStudentRequests(allRequests)
     } catch (error) {
       console.error('Error fetching student requests:', error)
-      // If endpoint doesn't exist, use mock data
-      setStudentRequests([
-        { id: 1, student_name: "Ramey Elking", bot_name: "Physics Helper", status: "pending" },
-        { id: 2, student_name: "John Smith", bot_name: "Math Tutor", status: "approved" },
-        { id: 3, student_name: "Sarah Johnson", bot_name: "Chemistry Lab", status: "rejected" },
-        { id: 4, student_name: "Mike Davis", bot_name: "Biology Guide", status: "rejected" }
+      // Fallback to mock data if API fails
+      setAllStudentRequests([
+        { id: 1, student_id: "student1", bot_id: chatbots[0]?._id, bot_name: "Physics Helper", status: "pending" },
+        { id: 2, student_id: "student2", bot_id: chatbots[0]?._id, bot_name: "Math Tutor", status: "approved" },
+        { id: 3, student_id: "student3", bot_id: chatbots[1]?._id, bot_name: "Chemistry Lab", status: "rejected" },
+        { id: 4, student_id: "student4", bot_id: chatbots[1]?._id, bot_name: "Biology Guide", status: "rejected" }
       ])
     } finally {
       setRequestsLoading(false)
     }
-  }, [])
+  }, [chatbots])
 
   // Initial data fetch
   useEffect(() => {
     fetchUserData()
     fetchChatbots()
-    fetchStudentRequests()
-  }, [fetchUserData, fetchChatbots, fetchStudentRequests])
+  }, [fetchUserData, fetchChatbots])
+
+  // Fetch student requests after chatbots are loaded
+  useEffect(() => {
+    if (chatbots.length > 0) {
+      fetchStudentRequests()
+    }
+  }, [chatbots, fetchStudentRequests])
 
   // Handle bot deletion
   const handleDeleteBot = useCallback(async (botId) => {
@@ -163,16 +244,39 @@ export default function Dashboard({ onNavigateToCreateBot }) {
   // Handle student request actions
   const handleRequestAction = useCallback(async (requestId, action) => {
     try {
-      await axios.patch(`http://16.171.18.65:8000/student-requests/${requestId}/${action}`, {}, {
+      // Find the request to get the bot_id
+      const request = filteredStudentRequests.find(req => req.id === requestId)
+      if (!request) {
+        toast.error("Request not found")
+        return
+      }
+
+      // Use the new membership API endpoints
+      let endpoint
+      if (action === 'approve') {
+        endpoint = `http://16.171.18.65:8000/memberships/accept/${requestId}`
+      } else {
+        endpoint = `http://16.171.18.65:8000/memberships/reject/${requestId}`
+      }
+
+      await axios.post(endpoint, {}, {
         headers: getAuthHeaders()
       })
 
       toast.success(`Request ${action}d successfully`)
 
-      // Update local state
-      setStudentRequests(prev =>
+      // Update both all requests and filtered requests
+      const updatedStatus = action === 'approve' ? 'approved' : 'rejected'
+
+      setAllStudentRequests(prev =>
         prev.map(req =>
-          req.id === requestId ? { ...req, status: action === 'approve' ? 'approved' : 'rejected' } : req
+          req.id === requestId ? { ...req, status: updatedStatus } : req
+        )
+      )
+
+      setFilteredStudentRequests(prev =>
+        prev.map(req =>
+          req.id === requestId ? { ...req, status: updatedStatus } : req
         )
       )
 
@@ -180,7 +284,7 @@ export default function Dashboard({ onNavigateToCreateBot }) {
       console.error(`Error ${action}ing request:`, error)
       toast.error(`Failed to ${action} request`)
     }
-  }, [])
+  }, [filteredStudentRequests])
 
   // Handle bot ID copy
   const handleCopy = useCallback((botId) => {
@@ -452,12 +556,12 @@ export default function Dashboard({ onNavigateToCreateBot }) {
               ) : chatbots.length === 0 ? (
                 <div className='text-white text-center py-8'>
                   <p>No chatbots found</p>
-                    <button
-                      onClick={onNavigateToCreateBot}
-                      className='text-[#8B5CF6] underline hover:text-[#EC4899] transition-colors duration-200'
-                    >
-                      Create your first bot
-                    </button>
+                  <button
+                    onClick={onNavigateToCreateBot}
+                    className='text-[#8B5CF6] underline hover:text-[#EC4899] transition-colors duration-200'
+                  >
+                    Create your first bot
+                  </button>
                 </div>
               ) : (
                 <>
@@ -569,7 +673,7 @@ export default function Dashboard({ onNavigateToCreateBot }) {
         {/* Student Access Requests */}
         <section className='w-full max-w-[1010px] h-auto lg:h-[373px] rounded-[18px] bg-[#24222E] mt-8 md:mt-12 lg:mt-18 overflow-hidden mx-auto'>
           <h1 className='font-poppins p-4 md:p-6 font-semibold text-[22px] md:text-[25px] lg:text-[27.65px] text-white'>
-            Student Access Requests ({studentRequests.length})
+            Student Access Requests for {selectedBot?.name || "Select a Bot"} ({filteredStudentRequests.length})
           </h1>
 
           {/* table container */}
@@ -577,7 +681,7 @@ export default function Dashboard({ onNavigateToCreateBot }) {
 
             {/* header */}
             <div className='hidden md:grid md:grid-cols-4 font-poppins font-medium text-[14px] md:text-[16px] text-[#E5E7EB] px-4 md:px-8 shrink-0'>
-              <h1>Student</h1>
+              <h1>Student ID</h1>
               <h1>Requested Bot</h1>
               <h1 className='ms-3 md:ms-5'>Status</h1>
               <h1 className='ms-15 md:ms-25'>Actions</h1>
@@ -593,18 +697,20 @@ export default function Dashboard({ onNavigateToCreateBot }) {
 
               {requestsLoading ? (
                 <div className='text-white text-center py-8'>Loading student requests...</div>
-              ) : studentRequests.length === 0 ? (
-                <div className='text-white text-center py-8'>No student requests found</div>
+              ) : !selectedBot ? (
+                <div className='text-white text-center py-8'>Please select a bot to view student requests</div>
+              ) : filteredStudentRequests.length === 0 ? (
+                <div className='text-white text-center py-8'>No student requests found for this bot</div>
               ) : (
                 <>
                   {/* Mobile view */}
                   <div className='md:hidden space-y-4 py-2'>
-                    {studentRequests.map((request) => (
+                    {filteredStudentRequests.map((request) => (
                       <div key={request.id} className='bg-[#2A2835] rounded-[12px] p-4'>
                         <div className='grid grid-cols-1 gap-2 mb-3'>
                           <div>
-                            <p className='text-[#9CA3AF] text-xs'>Student</p>
-                            <p className='text-white text-sm'>{request.student_name}</p>
+                            <p className='text-[#9CA3AF] text-xs'>Student ID</p>
+                            <p className='text-white text-sm'>{request.student_id}</p>
                           </div>
                           <div>
                             <p className='text-[#9CA3AF] text-xs'>Requested Bot</p>
@@ -647,10 +753,10 @@ export default function Dashboard({ onNavigateToCreateBot }) {
 
                   {/* Desktop view */}
                   <div className='hidden md:block'>
-                    {studentRequests.map((request, index) => (
+                    {filteredStudentRequests.map((request, index) => (
                       <React.Fragment key={request.id}>
                         <div className='grid grid-cols-4 items-center mt-5 font-poppins font-medium text-[14px] md:text-[16px] text-[#E5E7EB] px-4 md:px-5'>
-                          <h1>{request.student_name}</h1>
+                          <h1>{request.student_id}</h1>
                           <h1>{request.bot_name}</h1>
                           <div className={`w-[80px] md:w-[87px] h-[34px] md:h-[38px] rounded-[8px] md:rounded-[10px] ${getStatusColor(request.status).border} px-2 md:px-[11px] py-1 md:py-[7px] flex items-center justify-center`}>
                             <h1 className={`font-normal text-[12px] md:text-[13.33px] ${getStatusColor(request.status).text} capitalize`}>
@@ -682,7 +788,7 @@ export default function Dashboard({ onNavigateToCreateBot }) {
                         </div>
 
                         {/* line under row */}
-                        {index < studentRequests.length - 1 && (
+                        {index < filteredStudentRequests.length - 1 && (
                           <div className='hidden md:flex justify-center items-center mt-3 shrink-0'>
                             <div className='w-[95%] md:w-[948px] h-0 border border-[#FFFFFF66] opacity-25'></div>
                           </div>
