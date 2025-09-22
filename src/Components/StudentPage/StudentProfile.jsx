@@ -13,6 +13,62 @@ export default function StudentProfile() {
     const [isEditing, setIsEditing] = useState(false)
     const [loading, setLoading] = useState(true)
     const [userData, setUserData] = useState(null)
+    const [botId, setBotId] = useState("")
+    const [requestLoading, setRequestLoading] = useState(false)
+    const [membershipRequests, setMembershipRequests] = useState([])
+    const [requestsLoading, setRequestsLoading] = useState(true)
+
+    // API helper function
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('userToken')
+        if (!token) {
+            throw new Error("No authentication token found")
+        }
+        return {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    }
+
+    // Fetch membership requests
+    const fetchMembershipRequests = async () => {
+        try {
+            setRequestsLoading(true)
+            const response = await axios.get('http://16.171.18.65:8000/memberships/my', {
+                headers: getAuthHeaders()
+            })
+
+            // Transform the API response - flatten all status arrays into a single array
+            const allRequests = []
+
+            // The API returns an object with status keys, each containing arrays of requests
+            Object.keys(response.data).forEach(status => {
+                if (Array.isArray(response.data[status])) {
+                    response.data[status].forEach(request => {
+                        allRequests.push({
+                            ...request,
+                            status: status === 'accepted' ? 'accepted' : status === 'expired' ? 'rejected' : 'pending'
+                        })
+                    })
+                }
+            })
+
+            // Sort by creation date (newest first)
+            allRequests.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+            setMembershipRequests(allRequests)
+        } catch (error) {
+            console.error('Error fetching membership requests:', error)
+            if (error.response?.status === 401) {
+                toast.error("Authentication failed. Please login again.")
+            } else {
+                // Keep empty array if API fails
+                setMembershipRequests([])
+            }
+        } finally {
+            setRequestsLoading(false)
+        }
+    }
 
     // Fetch user data on component mount
     useEffect(() => {
@@ -52,6 +108,7 @@ export default function StudentProfile() {
         }
 
         fetchUserData()
+        fetchMembershipRequests()
     }, [])
 
     // Format date function
@@ -65,10 +122,47 @@ export default function StudentProfile() {
         })
     }
 
+    // Format date for requests (shorter format)
+    const formatRequestDate = (dateString) => {
+        if (!dateString) return "N/A"
+        const date = new Date(dateString)
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        })
+    }
+
     // Get initials for avatar
     const getInitials = (name) => {
         if (!name) return "U"
         return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+    }
+
+    // Get status styling
+    const getStatusStyle = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'pending':
+                return {
+                    bgColor: 'bg-[#EAB30833]',
+                    textColor: 'text-[#FACC15]'
+                }
+            case 'accepted':
+                return {
+                    bgColor: 'bg-[#27C8401A]',
+                    textColor: 'text-[#22C55E]'
+                }
+            case 'rejected':
+                return {
+                    bgColor: 'bg-[#EF444433]',
+                    textColor: 'text-[#F87171]'
+                }
+            default:
+                return {
+                    bgColor: 'bg-[#374151]',
+                    textColor: 'text-[#9CA3AF]'
+                }
+        }
     }
 
     const handleSubmit = async (e) => {
@@ -111,6 +205,49 @@ export default function StudentProfile() {
                 toast.error("Failed to update profile")
             }
         }
+    }
+
+    // Handle bot access request
+    const handleBotAccessRequest = async (e) => {
+        e.preventDefault()
+
+        if (!botId.trim()) {
+            toast.error("Please enter a Bot ID")
+            return
+        }
+
+        try {
+            setRequestLoading(true)
+
+            await axios.post(`http://16.171.18.65:8000/memberships/request/${botId}`, {}, {
+                headers: getAuthHeaders()
+            })
+
+            toast.success("Bot access request sent successfully!")
+            setBotId("") // Clear the input field
+
+            // Refresh membership requests after successful request
+            fetchMembershipRequests()
+
+        } catch (error) {
+            console.error('Error requesting bot access:', error)
+            if (error.response?.status === 401) {
+                toast.error("Authentication failed. Please login again.")
+            } else if (error.response?.status === 404) {
+                toast.error("Bot not found. Please check the Bot ID.")
+            } else if (error.response?.data?.detail) {
+                toast.error(error.response.data.detail)
+            } else {
+                toast.error("Failed to send bot access request")
+            }
+        } finally {
+            setRequestLoading(false)
+        }
+    }
+
+    // Handle clear form
+    const handleClearForm = () => {
+        setBotId("")
     }
 
     const handleCancel = () => {
@@ -277,49 +414,47 @@ export default function StudentProfile() {
 
             {/* requests part */}
             <section className='flex flex-col lg:flex-row items-center gap-6 md:gap-8 mt-4 md:mt-6 w-full max-w-[991px]'>
-                {/* left box */}
+                {/* left box - Requests Status */}
                 <section className='w-full lg:w-[533px] h-auto rounded-[16px] p-4 sm:p-5 md:p-6 flex flex-col gap-4 bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] opacity-100'>
                     <h1 className='text-white text-base sm:text-lg md:text-[19.2px] font-normal'>Requests Status</h1>
 
-                    <div className='w-full h-auto flex flex-col sm:flex-row justify-between items-center rounded-[16px] p-4 bg-[#100E17] opacity-100 gap-2 sm:gap-0'>
-                        <div>
-                            <h1 className='font-poppins font-semibold text-sm sm:text-base md:text-[16px] leading-6 align-middle text-[#FFFFFF]'>History Bot</h1>
-                            <p className='font-poppins font-normal text-xs sm:text-sm md:text-[14px] leading-5 align-middle text-[#9CA3AF]'>ID: HIST-101 | Requested: 2023-10-26</p>
+                    {requestsLoading ? (
+                        <div className='w-full h-auto flex items-center justify-center rounded-[16px] p-4 bg-[#100E17] opacity-100'>
+                            <p className='text-[#9CA3AF] text-sm'>Loading requests...</p>
                         </div>
-                        <div className='w-auto min-w-[83px] h-[28px] px-3 py-1 rounded-full bg-[#EAB30833] opacity-100 flex items-center justify-center'>
-                            <h1 className='font-poppins font-semibold text-xs sm:text-sm leading-5 text-[#FACC15]'>Pending</h1>
+                    ) : membershipRequests.length === 0 ? (
+                        <div className='w-full h-auto flex items-center justify-center rounded-[16px] p-4 bg-[#100E17] opacity-100'>
+                            <p className='text-[#9CA3AF] text-sm'>No requests found</p>
                         </div>
-                    </div>
-
-                    <div className='w-full h-auto flex flex-col sm:flex-row justify-between items-center rounded-[16px] p-4 bg-[#100E17] opacity-100 gap-2 sm:gap-0'>
-                        <div>
-                            <h1 className='font-poppins font-semibold text-sm sm:text-base md:text-[16px] leading-6 align-middle text-[#FFFFFF]'>Calculus Bot</h1>
-                            <p className='font-poppins font-normal text-xs sm:text-sm md:text-[14px] leading-5 align-middle text-[#9CA3AF]'>ID: CALC-202 | Requested: 2023-10-25</p>
-                        </div>
-                        <div className='w-auto min-w-[83px] h-[28px] px-3 py-1 rounded-full bg-[#EF444433] opacity-100 flex items-center justify-center'>
-                            <h1 className='font-poppins font-semibold text-xs sm:text-sm leading-5 text-[#F87171]'>Rejected</h1>
-                        </div>
-                    </div>
-
-                    <div className='w-full h-auto flex flex-col sm:flex-row justify-between items-center rounded-[16px] p-4 bg-[#100E17] opacity-100 gap-2 sm:gap-0'>
-                        <div>
-                            <h1 className='font-poppins font-semibold text-sm sm:text-base md:text-[16px] leading-6 align-middle text-[#FFFFFF]'>Calculus Bot</h1>
-                            <p className='font-poppins font-normal text-xs sm:text-sm md:text-[14px] leading-5 align-middle text-[#9CA3AF]'>ID: CALC-202 | Requested: 2023-10-25</p>
-                        </div>
-                        <div className='w-auto min-w-[83px] h-[28px] px-3 py-1 rounded-full bg-[#27C8401A] opacity-100 flex items-center justify-center'>
-                            <h1 className='font-poppins font-semibold text-xs sm:text-sm leading-5 text-[#22C55E]'>Accepted</h1>
-                        </div>
-                    </div>
+                    ) : (
+                        membershipRequests.map((request, index) => (
+                            <div key={request._id || index} className='w-full h-auto flex flex-col sm:flex-row justify-between items-center rounded-[16px] p-4 bg-[#100E17] opacity-100 gap-2 sm:gap-0'>
+                                <div>
+                                    <h1 className='font-poppins font-semibold text-sm sm:text-base md:text-[16px] leading-6 align-middle text-[#FFFFFF]'>Bot Request</h1>
+                                    <p className='font-poppins font-normal text-xs sm:text-sm md:text-[14px] leading-5 align-middle text-[#9CA3AF]'>
+                                        ID: {request.bot_id?.substring(0, 8) || 'N/A'} | Requested: {formatRequestDate(request.created_at)}
+                                    </p>
+                                </div>
+                                <div className={`w-auto min-w-[83px] h-[28px] px-3 py-1 rounded-full ${getStatusStyle(request.status).bgColor} opacity-100 flex items-center justify-center`}>
+                                    <h1 className={`font-poppins font-semibold text-xs sm:text-sm leading-5 ${getStatusStyle(request.status).textColor} capitalize`}>
+                                        {request.status}
+                                    </h1>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </section>
 
-                {/* right box */}
+                {/* right box - Request Access to a Bot */}
                 <section className='w-full lg:w-[427px] h-auto rounded-[16px] p-4 sm:p-5 md:p-6 flex flex-col gap-4 bg-gradient-to-b from-[#0F0A1F] to-[#1E1B29] opacity-100'>
                     <h1 className='text-white text-base sm:text-lg md:text-[19.2px] font-normal'>Request Access to a Bot</h1>
-                    <form className="flex flex-col gap-4">
+                    <form onSubmit={handleBotAccessRequest} className="flex flex-col gap-4">
                         {/* Input 1 */}
                         <input
                             type="text"
                             placeholder="Enter Bot ID"
+                            value={botId}
+                            onChange={(e) => setBotId(e.target.value)}
                             className="w-full h-[53px] rounded-[12px] border-2 border-[#374151] 
                px-4 sm:px-[18px] pt-[13px] pb-[14px] bg-[#100E17] opacity-100
                font-poppins font-normal text-sm sm:text-base leading-[100%] text-[#6B7280] 
@@ -335,20 +470,22 @@ export default function StudentProfile() {
                             {/* Primary Gradient Button */}
                             <button
                                 type="submit"
+                                disabled={requestLoading}
                                 className="w-full sm:w-[220px] h-[48px] rounded-[12px] 
                  bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] 
                  shadow-[0px_8px_36.2px_0px_#8A38F540,0px_-7px_13.4px_0px_#4A00E05C]
                  font-poppins font-normal text-base sm:text-[19.2px] leading-[100%] text-white 
-                 opacity-100 cursor-pointer
+                 opacity-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
                  hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]
                  transition"
                             >
-                                Request Access
+                                {requestLoading ? "Requesting..." : "Request Access"}
                             </button>
 
                             {/* Secondary Clear Button */}
                             <button
-                                type="reset"
+                                type="button"
+                                onClick={handleClearForm}
                                 className="w-full sm:w-[167px] h-[48px] rounded-[12px] 
              border-2 border-[#374151] 
              px-4 sm:px-[26px] pt-[14px] pb-[14px] 
