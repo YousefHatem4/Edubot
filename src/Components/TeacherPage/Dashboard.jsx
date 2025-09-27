@@ -384,7 +384,7 @@ export default function Dashboard({ onNavigateToCreateBot }) {
             <div className='flex flex-col md:flex-row justify-between gap-4 md:gap-0'>
               <div className='flex flex-col md:flex-row gap-4 md:gap-5 items-start md:items-center'>
                 {/* Profile Avatar */}
-                <div className='w-[60px] h-[60px] md:w-[70px] md:h-[70px] rounded-full opacity-100 bg-[linear-gradient(135deg,#8B5CF6_25%,#3B82F6_95.71%)] shadow-lg flex items-center justify-center shadow-[black_10%]'>
+                <div className='w-[60px] h-[60px] md:w-[70px] md:h-[70px] rounded-full opacity-100 bg-[linear-gradient(135deg,#8B5CF6_25%,#3B82F6_95.71%)] shadow-lg flex items-center justify-center '>
                   <h1 className='font-inter font-bold text-[16px] md:text-[18px] leading-[32px] tracking-[0] align-middle text-white'>
                     {userLoading ? "..." : getInitials(userData?.name)}
                   </h1>

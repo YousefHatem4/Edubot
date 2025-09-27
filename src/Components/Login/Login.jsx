@@ -6,11 +6,13 @@ import { useFormik } from 'formik'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { userContext } from '../Context/userContext'
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
   const navigate = useNavigate()
   const { setUserToken } = useContext(userContext)
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024)
@@ -18,6 +20,7 @@ export default function Login() {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
   const validate = (values) => {
     const errors = {}
     if (!values.email) {
@@ -32,6 +35,7 @@ export default function Login() {
     }
     return errors
   }
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -44,39 +48,42 @@ export default function Login() {
           email: values.email,
           password: values.password
         })
+
         const token = response.data.token || response.data.access_token
         localStorage.setItem('userToken', token)
         setUserToken(token)
+
         const userData = response.data.user || response.data
 
-        // --- NEW LOGIC START ---
-        // Try to get role from API first
-        let userRole = userData.role?.toLowerCase() || userData.user_role?.toLowerCase()
+        // Get role from API response first (priority)
+        let userRole = userData.role?.toLowerCase() ||
+          userData.user_role?.toLowerCase() ||
+          response.data.role?.toLowerCase() ||
+          response.data.user_role?.toLowerCase()
 
-        // If API doesn't provide a role, use our new roleCache
+        // Only fallback to localStorage if API doesn't provide role
         if (!userRole) {
-          const roleCache = JSON.parse(localStorage.getItem('roleCache')) || {};
-          userRole = roleCache[values.email];
+          const roleCache = JSON.parse(localStorage.getItem('roleCache')) || {}
+          userRole = roleCache[values.email]?.toLowerCase()
         }
 
-        // If a role was found, ensure it's part of the userData object before saving
+        // Ensure role is included in userData
         if (userRole) {
-          userData.role = userRole;
+          userData.role = userRole
         }
 
         localStorage.setItem('userData', JSON.stringify(userData))
         toast.success("Signed in successfully 🎉")
 
-        // Navigate based on the found role
+        // Navigate based on role
         if (userRole === 'teacher') {
           navigate("/teacher-page")
         } else if (userRole === 'student') {
           navigate("/student-page")
         } else {
-          // Handle case where role could not be determined
-          toast.error("Login failed: Could not determine user role.");
+          toast.error("Login failed: Could not determine user role.")
+          return
         }
-        // --- NEW LOGIC END ---
 
       } catch (error) {
         if (error.response?.data?.detail) {
@@ -101,6 +108,7 @@ export default function Login() {
       }
     }
   })
+
   return (
     <section className='bg-[linear-gradient(116.66deg,#0F0A1F_1.16%,#1E1B29_94.74%)] p-4 md:p-6 lg:p-10 min-h-screen flex items-center justify-center flex-col'>
       {/* main box */}
