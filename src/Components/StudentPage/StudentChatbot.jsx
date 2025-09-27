@@ -14,16 +14,19 @@ import {
 import { faClock, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 
+
 /* tiny helper to compose tailwind classes clearly while keeping styles unchanged */
 function cn(...parts) {
   return parts.filter(Boolean).join(" ");
 }
+
 
 /* Arabic text detection utility */
 function isArabicText(text) {
   const arabicRegex = /[\u0600-\u06FF\u0750-\u077F]/;
   return arabicRegex.test(text);
 }
+
 
 /* ---------- Subcomponents ---------- */
 const HeaderMobile = ({ menuOpen, setMenuOpen }) => (
@@ -42,6 +45,7 @@ const HeaderMobile = ({ menuOpen, setMenuOpen }) => (
     </button>
   </div>
 );
+
 
 const SidebarHeader = ({ collapsed, setCollapsed }) => (
   <div className="hidden lg:block">
@@ -105,6 +109,7 @@ const SidebarHeader = ({ collapsed, setCollapsed }) => (
     </div>
   </div>
 );
+
 
 /* ProfileNav with fixed positioning to appear outside the sidebar */
 const ProfileNav = forwardRef(
@@ -237,8 +242,10 @@ const ProfileNav = forwardRef(
   }
 );
 
+
 const MessageBubble = ({ message, isBot, collapsed, isMobile }) => {
   const isArabic = isArabicText(message.text);
+
 
   return (
     <div
@@ -246,7 +253,7 @@ const MessageBubble = ({ message, isBot, collapsed, isMobile }) => {
         "max-w-[100%] md:max-w-[100%] p-4 rounded-2xl",
         isBot ? "text-[#F3F4F6]" : "bg-[#9333EA6B] text-[#F3F4F6]",
         isBot && collapsed && !isMobile ? "-ms-35" : "",
-        isArabic && isBot && collapsed ? '-ms-[15px]' : '' 
+        isArabic && isBot && collapsed ? '-ms-[15px]' : ''
       )}
       dir={isBot && isArabic ? "rtl" : "ltr"}
       style={{
@@ -271,6 +278,7 @@ const MessageBubble = ({ message, isBot, collapsed, isMobile }) => {
   );
 };
 
+
 const BotTyping = ({ collapsed, isMobile }) => (
   <div className={cn(
     "max-w-[85%] md:max-w-[70%] p-4 rounded-2xl bg-[#2D2A3B]",
@@ -283,6 +291,49 @@ const BotTyping = ({ collapsed, isMobile }) => (
     </div>
   </div>
 );
+
+
+/* Chatbot Header Component - NEW */
+const ChatbotHeader = ({ selectedBot, collapsed, isMobile }) => {
+  const getBotImage = () => {
+    const botType = selectedBot.toLowerCase().replace(' bot', '');
+    switch (botType) {
+      case 'math':
+        return 'bot-1.png';
+      case 'chemistry':
+        return 'bot-1.png';
+      case 'biology':
+        return 'bot-1.png';
+      case 'english':
+        return 'bot-1.png';
+      default:
+        return 'bot-1.png';
+    }
+  };
+
+  const getBotName = () => {
+    return selectedBot.replace(' bot', '').replace(' Bot', '');
+  };
+
+  return (
+    <div className={cn(
+      "flex flex-row gap-4 items-center py-3  mb-6",
+      collapsed && !isMobile ? "ml-20" : ""
+    )}>
+     
+        <img
+          src='bahaa.jpg'
+          className="w-[42px] h-[42px] rounded-[99px] opacity-100"
+          alt="Chatbot Avatar"
+        />
+ 
+      <h2 className="font-poppins font-normal text-[13.33px] leading-[100%] align-middle text-[#E5E7EB] tracking-[0%] capitalize">
+        {getBotName()} Bot, Mr Bahaa
+      </h2>
+    </div>
+  );
+};
+
 
 /* ---------- Main Component ---------- */
 export default function StudentChatbot() {
@@ -313,6 +364,7 @@ export default function StudentChatbot() {
   const profileNavRef = useRef(null);
   const profileTriggerRef = useRef(null);
 
+
   // Close profile nav on outside click
   useEffect(() => {
     function handleClickOutside(e) {
@@ -333,13 +385,16 @@ export default function StudentChatbot() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showProfileNav]);
 
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
 
   // lock page scroll like original
   useEffect(() => {
@@ -354,6 +409,7 @@ export default function StudentChatbot() {
       body.style.overflow = prevBody;
     };
   }, []);
+
 
   // ENHANCED: responsive behavior with mobile-first approach
   useEffect(() => {
@@ -376,6 +432,7 @@ export default function StudentChatbot() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
     const newMessage = { text: inputMessage, sender: "user", timestamp: new Date() };
@@ -383,9 +440,11 @@ export default function StudentChatbot() {
     setInputMessage("");
     setIsTyping(true);
 
+
     setTimeout(() => {
       // Check if user message contains Arabic to respond in Arabic
       const userMessageIsArabic = isArabicText(inputMessage);
+
 
       const botResponses = {
         physics: userMessageIsArabic
@@ -402,6 +461,7 @@ export default function StudentChatbot() {
           : "I'm here to help with your studies! Could you please clarify which subject you need assistance with?",
       };
 
+
       const subject = selected.toLowerCase().replace(' bot', '');
       const botMessage = {
         text: botResponses[subject] || botResponses.default,
@@ -414,10 +474,12 @@ export default function StudentChatbot() {
             : "",
       };
 
+
       setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
     }, 1500);
   };
+
 
   // collapse transitions identical
   useEffect(() => {
@@ -438,10 +500,12 @@ export default function StudentChatbot() {
     }
   }, [collapsed, isMobile]);
 
+
   // Handle profile click
   const handleProfileClick = () => {
     setShowProfileNav(prev => !prev);
   };
+
 
   return (
     <section className="flex flex-col h-screen overflow-hidden overflow-x-hidden overscroll-contain">
@@ -664,42 +728,72 @@ export default function StudentChatbot() {
               </section>
             )}
             {messages.length > 0 && (
-              <div
-                className={cn(
-                  "space-y-6 transition-all duration-300",
-                  collapsed && !isMobile ? "ml-32" : "ml-0"
-                )}
-              >
-                {messages.map((message, index) => {
-                  const isBot = message.sender === "bot";
-                  const isBotArabic = isBot && isArabicText(message.text);
+              <>
+                {/* Chatbot Header - Only show when messages exist */}
+                <ChatbotHeader selectedBot={selected} collapsed={collapsed} isMobile={isMobile} />
+                <div
+                  className={cn(
+                    "space-y-6 transition-all duration-300",
+                    collapsed && !isMobile ? "ml-32" : "ml-0"
+                  )}
+                >
+                  {messages.map((message, index) => {
+                    const isBot = message.sender === "bot";
+                    const isBotArabic = isBot && isArabicText(message.text);
 
-                  return (
-                    <div
-                      key={index}
-                      className={cn(
-                        "flex",
-                        isBot
-                          ? (isBotArabic ? "justify-end" : "justify-start")
-                          : "justify-end"
-                      )}
-                    >
-                      <MessageBubble message={message} isBot={isBot} collapsed={collapsed} isMobile={isMobile} />
+
+                    return (
+                      <div
+                        key={index}
+                        className={cn(
+                          "flex",
+                          isBot
+                            ? (isBotArabic ? "justify-end" : "justify-start")
+                            : "justify-end"
+                        )}
+                      >
+                        <MessageBubble message={message} isBot={isBot} collapsed={collapsed} isMobile={isMobile} />
+                      </div>
+                    );
+                  })}
+                  {isTyping && (
+                    <div className={`flex justify-start ${collapsed && '-ms-35'} `}>
+                      <BotTyping collapsed={collapsed} isMobile={isMobile} />
                     </div>
-                  );
-                })}
-                {isTyping && (
-                  <div className={`flex justify-start ${collapsed && '-ms-35'} `}>
-                    <BotTyping collapsed={collapsed} isMobile={isMobile} />
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              </>
             )}
             <div ref={messagesEndRef} />
           </div>
           {/* Fixed Input Area - Now properly layered */}
           <div className="flex-shrink-0 p-6 border-t border-transparent">
-            <div className="relative max-w-3xl mx-auto">
+
+            <div className="relative max-w-3xl mx-auto flex items-center">
+              {/* btn behind the input of messages */}
+              <div className="w-[42px] h-[42px] rounded-full p-2 gap-2 bg-[#9CA3AF] opacity-100 flex items-center justify-center me-3 cursor-pointer">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20.1673 6.49998C20.7196 6.49998 21.1673 6.05226 21.1673 5.49998C21.1673 4.9477 20.7196 4.49998 20.1673 4.49998V5.49998V6.49998ZM12.834 4.49998C12.2817 4.49998 11.834 4.9477 11.834 5.49998C11.834 6.05226 12.2817 6.49998 12.834 6.49998V5.49998V4.49998ZM17.5007 1.83331C17.5007 1.28103 17.0529 0.833313 16.5007 0.833313C15.9484 0.833313 15.5007 1.28103 15.5007 1.83331H16.5007H17.5007ZM15.5007 9.16665C15.5007 9.71893 15.9484 10.1666 16.5007 10.1666C17.0529 10.1666 17.5007 9.71893 17.5007 9.16665H16.5007H15.5007ZM20.1673 5.49998V4.49998H16.5007V5.49998V6.49998H20.1673V5.49998ZM16.5007 5.49998V4.49998H12.834V5.49998V6.49998H16.5007V5.49998ZM16.5007 1.83331H15.5007V5.49998H16.5007H17.5007V1.83331H16.5007ZM16.5007 5.49998H15.5007V9.16665H16.5007H17.5007V5.49998H16.5007Z" fill="url(#paint0_linear_769_2010)" />
+                  <path d="M10.5423 2.75C6.43717 2.75 4.3846 2.75 3.10929 4.02531C1.83398 5.30061 1.83398 7.35319 1.83398 11.4583C1.83398 15.5635 1.83398 17.6161 3.10929 18.8914C4.3846 20.1667 6.43717 20.1667 10.5423 20.1667C14.6475 20.1667 16.7 20.1667 17.9753 18.8914C19.2507 17.6161 19.2507 15.5635 19.2507 11.4583V11" stroke="url(#paint1_linear_769_2010)" stroke-width="2" stroke-linecap="round" />
+                  <path d="M4.58398 19.25C8.44313 14.8946 12.7801 9.11856 19.2507 13.4507" stroke="url(#paint2_linear_769_2010)" stroke-width="2" />
+                  <defs>
+                    <linearGradient id="paint0_linear_769_2010" x1="16.5007" y1="1.83331" x2="16.5007" y2="9.16665" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#0F0A1F" />
+                      <stop offset="1" stop-color="#1E1B29" />
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_769_2010" x1="10.5423" y1="2.75" x2="10.5423" y2="20.1667" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#0F0A1F" />
+                      <stop offset="1" stop-color="#1E1B29" />
+                    </linearGradient>
+                    <linearGradient id="paint2_linear_769_2010" x1="11.9173" y1="11.9167" x2="11.9173" y2="19.25" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#0F0A1F" />
+                      <stop offset="1" stop-color="#1E1B29" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+
+
+              </div>
               <input
                 type="text"
                 value={inputMessage}
